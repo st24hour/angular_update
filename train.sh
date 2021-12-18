@@ -1,0 +1,5845 @@
+#!/bin/bash
+
+############################## 200603 ###########################
+# DGX
+for i in 0.25
+do
+	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python speed_test.py \
+					--dataset imagenet \
+					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+					--num_workers 80 \
+					--epochs 90 \
+					--epoch_step 30 60 80 \
+					--batch_size 1024 \
+					--weight_decay 0.0001 \
+					--lr 0.4 \
+					--nesterov \
+					--momentum 0.9 \
+					--net_type resnet50_GBN_invariant2 \
+					--save_model \
+					--seed 0 \
+					--zero_init_residual \
+					--warm_up_epoch 0 \
+					--alpha_sqaure $i
+done
+
+############################## 200603 ###########################
+# 8gpu - hong
+# for i in 0.25
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 80 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+############################## 200603 ###########################
+# 8gpu - hong
+# for i in 0.03125
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr 3.2 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--alpha_sqaure $i
+# done
+
+# DGX
+# for i in 0.5
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 512 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.2 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--alpha_sqaure $i \
+# 					--load_dir logs_invariant_no_scale_w/imagenet/resnet50_GBN_invariant2/batch_512/invariant_normx_alpha_sq_0.5_WD_0.0002_lr0.1_eps_5e-06_zero_init_True_warm_iter_0_filter_bn_bias_False_momentum0.9_nester_True_epoch10_amp_True_seed0_save0/0/
+# done
+
+
+############################## 200602 ###########################
+# DGX
+# for i in 0.25
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i \
+# 					--load_dir logs_invariant_no_scale_w/imagenet/resnet50_GBN_invariant2/batch_1024/invariant_normx_alpha_sq_0.25_WD_0.0004_lr0.1_eps_2.5e-06_zero_init_True_warm_iter_0_filter_bn_bias_False_momentum0.9_nester_True_epoch90_amp_True_seed0_save0/0/
+# done
+
+# DGX
+# for i in 0.25
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i \
+# 					--load_dir logs_invariant_no_scale_w/imagenet/resnet50_GBN_invariant2/batch_1024/invariant_normx_alpha_sq_0.25_WD_0.0004_lr0.1_eps_2.5e-06_zero_init_True_warm_iter_0_filter_bn_bias_False_momentum0.9_nester_True_epoch90_amp_True_seed0_save0/0/
+# done
+
+# 8gpu - h
+# for i in 0.5
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 10 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 512 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.2 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+# 8gpu - h
+# for i in 0.25
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 30 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i \
+# 					--load_dir logs_invariant_no_scale_w/imagenet/resnet50_GBN_invariant2/batch_1024/invariant_normx_alpha_sq_0.25_WD_0.0004_lr0.1_eps_2.5e-06_zero_init_True_warm_iter_0_filter_bn_bias_False_momentum0.9_nester_True_epoch90_amp_True_seed0_save0/0/
+# done
+
+############################## 200601 ###########################
+# DGX
+# for i in 0.0625
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--lr 1.6 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+# 8gpu-h
+# for i in 0.25
+# do
+# 	CUDA_VISIBLE_DEVICES=7 python invariant.1.0.2.3.py \
+# 					--dataset cifar10 \
+# 					--num_workers 40 \
+# 					--epochs 2 \
+# 					--epoch_step 2 4 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+# 8gpu-h
+# for i in 0.25
+# do
+# 	CUDA_VISIBLE_DEVICES=7 python invariant.1.0.2.3.py \
+# 					--dataset cifar10 \
+# 					--num_workers 40 \
+# 					--epochs 10 \
+# 					--epoch_step 2 4 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i \
+# 					--load_dir logs_invariant_no_scale_w/cifar10/resnet18_GBN_invariant2/batch_1024/invariant_normx_alpha_sq_0.25_WD_0.0004_lr0.1_eps_2.5e-06_zero_init_True_warm_iter_0_filter_bn_bias_False_momentum0.9_nester_True_epoch2_amp_True_seed0_save0/0/
+# done
+
+
+
+# 8gpu
+# for i in 0.25
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+# DGX
+# for i in 0.125
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.8 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+# DGX
+# for i in 0.125
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.3.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.8 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+############################## 200527 ###########################
+# # 8gpu
+# for i in 0.015625
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--lr 6.4 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--save_dir './logs_invariant_scaler/' \
+#  					--alpha_sqaure $i
+# done
+
+############################## 200527 ###########################
+# # 8gpu
+# for i in 0.03125
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python invariant.1.0.2.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0002 \
+# 					--lr 3.2 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--save_dir './logs_invariant_scaler/' \
+#  					--alpha_sqaure $i
+# done
+
+# DGX
+# for i in 0.25
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.3.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.4 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+# 8gpu
+# for i in 0.03125
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0002 \
+# 					--lr 3.2 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_bn_fix \
+# 					--save_model \
+# 					--seed 0 1 2 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+# 8gpu
+# for i in 0.25
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.3.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 512 \
+# 					--weight_decay 0.0002 \
+# 					--lr 0.4 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+############################## 200526 ###########################
+# 8gpu
+# for i in 0.015625
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0002 \
+# 					--lr 6.4 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2_avg \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--alpha_sqaure $i
+# done
+
+############################## 200523 ###########################
+# # 8gpu
+# for i in 0.015625
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--lr 6.4 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 15 \
+# 					--alpha_sqaure $i
+# done
+
+# CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.py \
+# 				--dataset cifar10 \
+# 				--epochs 300 \
+# 				--batch_size 4096 \
+# 				--weight_decay 0.0001 \
+# 				--lr 6.4 \
+# 				--momentum 0.9 \
+# 				--net_type densenetBC100_GBN_invariant \
+# 				--save_model \
+# 				--seed 0 1 2 3 4 \
+# 				--zero_init_residual \
+# 				--warm_up_epoch 15
+
+############################## 200523 ###########################
+# # DGX
+	# CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+	# 				--dataset cifar10 \
+	# 				--epochs 300 \
+	# 				--batch_size 64 \
+	# 				--weight_decay 0.0001 \
+	# 				--lr 0.1 \
+	# 				--momentum 0.9 \
+	# 				--net_type densenetBC100_GBN_invariant \
+	# 				--save_model \
+	# 				--seed 0 1 2 3 4 \
+	# 				--zero_init_residual \
+	# 				--warm_up_epoch 15
+
+# 8gpu
+# CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+# 				--dataset cifar10 \
+# 				--epochs 300 \
+# 				--batch_size 128 \
+# 				--weight_decay 0.0002 \
+# 				--lr 0.1 \
+# 				--momentum 0.9 \
+# 				--net_type resnet18_GBN_invariant2 \
+# 				--save_model \
+# 				--seed 0 1 2 3 4 \
+# 				--zero_init_residual \
+# 				--warm_up_epoch 15 \
+# 				--alpha_sqaure 1
+
+# # DGX
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0002 \
+# 					--lr 0.2 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 15
+ 					
+# 8gpu
+# for i in 0.5
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0002 \
+# 					--lr 0.2 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+#  					--alpha_sqaure $i
+# done
+
+############################## 200522 ###########################
+# 8gpu
+# for i in 1e-3
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.00001 \
+# 					--lr 0.001 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--alpha $i
+# done
+
+# 8gpu
+# for i in 0.01
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.001 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--eps 1e-05
+# done
+
+############################## 200521 ###########################
+# 8gpu
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 75 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e+02 \
+#  					--save_dir './logs_invariant_epoch/' \
+#  					--eps 1e-05 \
+#  					--epoch_step 38 56
+# done
+
+# 8gpu
+# for i in 1563
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant_num.1.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.0002 \
+# 					--lr 3.2 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample $i \
+#  					--base_norm 4096 \
+#  					--eps 0.00032
+# done
+
+############################## 200520 ###########################
+# DGX
+# for i in 1e+13
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-18  \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e+16 \
+#  					--save_dir './logs_invariant_same/' \
+#  					--amp \
+#  					--eps 1e+09
+# done
+
+# 8gpu
+# for i in 1e-01
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-04  \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant_noBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e+02 \
+#  					--save_dir './logs_invariant_same/' \
+#  					--amp \
+#  					--eps 1e-05
+# done
+
+# DGX
+# for i in 0.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 512 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5
+# done
+
+############################## 200518 ###########################
+# 8gpu
+# for i in 1e-01
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.3.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-04 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e+02 \
+#  					--save_dir './logs_delete/' \
+#  					--eps 1e-05 \
+#  					--epoch_step 150 225 \
+#  					--lr_decay 0.1 \
+#  					--wd_linear 0.0002
+# done
+
+############################## 200517 ###########################
+# DGX
+# for i in 0.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5
+# done
+
+############################## 200517 ###########################
+# # 8gpu
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python invariant.1.0.2.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--save_dir './logs_invariant_scaler/' \
+#  					--eps 7.8125e-08 \
+#  					--base_norm 32
+# done
+
+# # 8gpu
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--base_norm 256 \
+# 					--eps 2.5e-06
+# done
+
+############################## 200516 ###########################
+# 8gpu-h
+# for i in 1e-01
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.3.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-04 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e+02 \
+#  					--save_dir './logs_invariant_tuning/' \
+#  					--eps 1e-05 \
+#  					--epoch_step 150 225 \
+#  					--lr_decay 0.1 \
+#  					--wd_linear 0.0002
+# done
+
+############################## 200515 ###########################
+# 8gpu-h
+# for i in 1e-00
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.3.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-04 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e+02 \
+#  					--save_dir './logs_invariant_faster/' \
+#  					--eps 1e-05 \
+#  					--epoch_step 30 150 250 \
+#  					--lr_decay 0.1 \
+#  					--wd_linear 0.0005
+# done
+
+# DGX
+# for i in 1e-04
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-01 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e-01 \
+#  					--save_dir './logs_invariant_scaler/' \
+#  					--eps 1e-08 \
+#  					--amp
+# done
+
+# 8gpu-h
+# for i in 1e-01
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.3.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-04 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e+02 \
+#  					--save_dir './logs_invariant_faster/' \
+#  					--eps 1e-05
+# done
+
+# 8gpu-chan
+# for i in 1e-04
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-01 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e-01 \
+#  					--save_dir './logs_invariant_scaler/' \
+#  					--eps 1e-08
+# done
+
+# DGX
+# for i in 1e-04
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python variant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-01 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e-01 \
+#  					--save_dir './logs_variant_same/' \
+#  					--amp \
+#  					--eps 1e-08
+# done
+
+# group4
+# for i in 1e+08
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-13  \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e+11 \
+#  					--save_dir './logs_invariant_same/' \
+#  					--amp \
+#  					--eps 1e+04
+# done
+
+# # 8gpu-h
+# for i in 1e-04
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.3.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-01 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e-01 \
+#  					--save_dir './logs_invariant_same/' \
+#  					--amp \
+#  					--eps 1e-08
+# done
+
+############################## 200514 ###########################
+# DGX
+# for i in 1.6
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5
+# done
+
+# # DGX
+# for i in 0.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5
+# done
+
+# # 8gpu-h
+# for i in 1e-04
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.3.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-01 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1.28e-01 \
+#  					--save_dir './logs_invariant_same/' \
+#  					--amp \
+#  					--eps 1e-08
+# done
+
+############################## 200513 ###########################
+# # 8gpu
+# for i in 0.0008
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--base_norm 256 \
+# 					--eps 1.25e-06
+# done
+
+# # 8gpu
+# for i in 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--base_norm 256 \
+# 					--eps 6.25e-07
+# done
+
+# 8gpu-h
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python variant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.2 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 0.128 \
+#  					--save_dir './logs_variant_same/' \
+#  					--amp \
+#  					--eps 1.00E-08 \
+#  					--filter_bn_bias \
+#  					--lr_linear 0.0001
+# done
+
+############################## 200512 ###########################
+# 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5
+# done
+
+############################## 200511 ###########################
+# 8gpu-h
+# for i in 1e+05
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 2e-10 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 128000000 \
+#  					--save_dir './logs_invariant_same/' \
+#  					--amp \
+#  					--eps 10
+# done
+
+# 8gpu
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--base_norm 256 \
+# 					--eps 2.5e-06
+# done
+
+# 8gpu-lee
+# for i in 0.000123123
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 2 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--epoch_step 1 
+# done
+
+############################## 200510 ###########################
+# # 8gpu-p
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 512 \
+# 					--weight_decay 0.0002 \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed $i \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--base_norm 256 \
+# 					--eps 5e-06
+# done
+
+# 8gpu
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed $i \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0
+# done
+
+# DGX
+# for i in 6250 12500 25000 50000
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant_num.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay 0.0064 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample $i
+# done
+
+# DGX
+# for i in 0 1 2 3 4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0032 \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed $i \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--base_norm 256 \
+# 					--eps 3.125e-07
+# done
+
+############################## 200509 ###########################
+# 8gpu-lee
+# for i in 6250
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant_num.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.0001 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample $i
+# done
+
+############################## 200508 ###########################
+# DGX
+# for i in 1563 3125 6250 12500 25000 50000
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant_num.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay 0.0064 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample $i
+# done
+
+# # DGX
+# for i in 0.1
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--lr 0.0001 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 0.064 \
+#  					--save_dir './logs_invariant_same/' \
+#  					--amp \
+#  					--eps 1e-08
+# done
+
+# # 8gpu-lee
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant_num.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample 50000
+# done
+
+############################## 200507 ###########################
+# 8gpu-D
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--base_norm 256 \
+# 					--eps 3.125e-07
+# done
+
+# # group4
+# for i in 0.0032 0.0002 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant_num.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample 3125
+# done
+
+############################## 200505 ###########################
+# # # 8gpu-lee
+# for i in 0.0008 0.0004 0.0002 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant_num.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample 6250
+# done
+
+# # group4
+# for i in 0.0128 0.0064 0.0032 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant_num.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample 6250
+# done
+
+# # group2
+# for i in 0.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# 8gpu-p
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 512 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--base_norm 256 \
+# 					--eps 5e-06
+# done
+
+############################## 200504 ###########################
+# # group2
+# for i in 1.6
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# 8gpu-p
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 128 \
+#  					--save_dir './logs_invariant_same/' \
+#  					--amp
+# done
+
+############################## 200503 ###########################
+# # group4
+# for i in 0.00002
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1280 \
+#  					--save_dir './logs_invariant_same/' \
+#  					--amp \
+#  					--eps 1e-7
+# done
+
+# 8gpu-b
+# for i in 0.00002
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size de \
+# 					--weight_decay $i \
+# 					--lr 1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1280 \
+#  					--save_dir './logs_invariant_same/'
+# done
+
+# # group2
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# # 8gpu-p
+# for i in 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+############################## 200501 ###########################
+# # 8gpu-b
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# 8gpu
+# for i in 0.1
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0
+# done
+
+# # 8gpu-p
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+
+# # group2
+# for i in 0.0008
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 512 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# # group2
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=1 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+
+
+# 8gpu-b
+# for i in 0.00002
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 1280 \
+#  					--save_dir './logs_invariant_same/'
+# done
+
+############################## 200430 ###########################
+# 8gpu-p
+# for i in 0.064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# # 8gpu-p
+# for i in 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# # 8gpu
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# # 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+############################## 200429 ###########################
+# 8gpu-b
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 128
+# done
+
+# # group2
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# # group2
+# for i in 0.0008
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 512 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# 8gpu-p
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# 8gpu-p
+# for i in 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# 8gpu
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 128
+# done
+
+
+
+############################## 200427 ###########################
+# # group2
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=1 python invariant.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 6 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 128 \
+#  					--epoch_step 2
+# done
+
+
+# # 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.3.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5
+# done
+
+# 8gpu
+# CUDA_VISIBLE_DEVICES=0 python invariant_test.py \
+# 				--dataset cifar10 \
+# 				--epochs 2 \
+# 				--batch_size 512 \
+# 				--weight_decay1 0.0002 \
+# 				--weight_decay1 0.0002 \
+# 				--lr1 0.1 \
+# 				--lr2 0.1 \
+# 				--momentum 0.9 \
+# 				--net_type resnet18_GBN_invariant2 \
+# 				--save_model \
+# 				--seed 0 1 \
+# 				--zero_init_residual \
+# 				--warm_up_epoch 0 \
+# 				--base_norm 512 \
+# 				--amp 
+
+############################## 200425 ###########################
+# # 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+############################## 200425 ###########################
+# # 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant2 \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+# # 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+# # 8gpu-p
+# for i in 0.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+# 8gpu
+# CUDA_VISIBLE_DEVICES=0 python invariant_test.py \
+# 				--dataset cifar10 \
+# 				--epochs 2 \
+# 				--batch_size 512 \
+# 				--weight_decay1 0.0002 \
+# 				--weight_decay1 0.0008 \
+# 				--lr1 0.4 \
+# 				--lr2 0.1 \
+# 				--momentum 0.9 \
+# 				--net_type resnet18_GBN_invariant2 \
+# 				--save_model \
+# 				--seed 0 1 \
+# 				--zero_init_residual \
+# 				--warm_up_epoch 0 \
+# 				--base_norm 128 \
+# 				--amp 
+
+############################## 200420 ###########################
+# # 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python scaler.1.3.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0
+# done
+
+############################## 200419 ###########################
+# # group2
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python scaler.1.3.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# # group2
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python scaler.1.3.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant \
+# 					--save_model \
+# 					--seed 123123 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 128
+# done
+
+############################## 200418 ###########################
+# # 8gpu-p
+# for i in 0.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+# # 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python scaler.1.3.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--filter_bn_bias
+# done
+
+############################## 200418 ###########################
+# # group2
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python scaler.1.3.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 128
+# done
+
+############################## 200410 ###########################
+# group2
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python scaler.1.3.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 128
+# done
+
+############################## 200410 ###########################
+# 8gpu-p
+# num_data densenet
+# for i in 0.05 0.1 0.2 0.4 0.8 1.6 3.2 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python num_data.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+#  					--num_sample 3125
+# done
+
+# # 8gpu-p
+# # num_data densenet
+# for i in 0.05 0.1 0.2 0.4 0.8 1.6 3.2 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python num_data.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+#  					--num_sample 6250
+# done
+
+############################## 200409 ###########################
+# 8gpu-p
+# for i in 0.05 0.2 0.4 0.8 1.6 3.2 6.4 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python num_data.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample 6250
+# done
+
+# # 8gpu
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+############################## 200408 ###########################
+# group2-0
+# for i in 0.05 0.2 0.4 0.8 1.6 3.2 6.4 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python num_data.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample 12500
+# done
+
+############################## 200407 ###########################
+# 8gpu
+# for i in 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.1.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--base_norm 256
+# done
+
+# group2
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# # group2
+# for i in 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+############################## 200405 ###########################
+# 8gpu
+# for i in 0.032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.1.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--base_norm 256
+# done
+
+# group2
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# # group2
+# for i in 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+############################## 200404 ###########################
+# 8gpu
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.1.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--base_norm 256
+# done
+
+
+# IITP
+# for i in 1.6
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# 8gpu-p
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# # 8gpu-p
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.1.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+############################## 200403 ###########################
+# 8gpu
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# # 8gpu
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.1.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--base_norm 64
+# done
+
+# 8gpu-p
+# for i in 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# IITP
+# for i in 1.6
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# 8gpu
+# for i in 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# # 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# group2
+# for i in 0.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# # group2
+# for i in 0.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+############################## 200401 ###########################
+# IITP
+# for i in 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+############################## 200331 ###########################
+
+# 8gpu
+# for i in 0.1 0.2 0.4 0.8 1.6 3.2 6.4 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python num_data.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+#  					--num_sample 1563
+# done
+
+# # 8gpu
+# for i in 0.1 0.2 0.4 0.8 1.6 3.2 6.4 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python num_data.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+#  					--num_sample 3125
+# done
+
+# 8gpu-j
+# for i in 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15
+# done
+
+# # 8gpu-j
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+# IITP
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+
+############################## 200330 ###########################
+# IITP
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+#  					--base_norm 256
+# done
+
+############################## 200329 ###########################
+# IITP
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+#  					--base_norm 256
+# done
+
+# 8gpu
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.1.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--base_norm 256
+# done
+
+# # 8gpu
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--base_norm 256
+# done
+
+# group2
+# for i in 0.0004 0.0008 0.0016 0.0032 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python num_data.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample 25000
+# done
+
+############################## 200326 ###########################
+
+
+# group2
+# for i in 0.0001 0.0002 0.004 0.008 0.0016 0.0032 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python num_data.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0 \
+#  					--num_sample 25000
+# done
+
+# 8gpu
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--base_norm 256 \
+# 					--amp
+# done
+
+# # 8gpu
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.1.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--base_norm 256
+# done
+
+############################## 200325 ###########################
+# 8gpu
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias 
+# done
+
+
+# IITP
+# for i in 0.0001 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 0
+# done
+
+
+# group2
+# for i in 1.6
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15
+# done
+
+############################## 200323 ###########################
+# group2
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+#  					--base_norm 256
+# done
+
+# # IITP
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+#  					--base_norm 256
+# done
+
+# # IITP
+# for i in 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15
+# done
+
+# # IITP
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15
+# done
+
+# # 8gpu
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--base_norm 256
+# done
+
+# # 8gpu
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 40 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--base_norm 256
+# done
+
+############################## 200323 ###########################
+# 8gpu
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15
+# done
+
+############################## 200321 ###########################
+# 8gpu
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15
+# done
+
+# # IITP
+# for i in 0.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15
+# done
+
+# 8gpu
+# for i in 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python scaler.1.0.0.py \
+# 					--dataset cifar10 \
+# 					--epochs 3000000000000000000 \
+# 					--batch_size 32768 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+# 					--filter_bn \
+# 					--filter_bias	
+# done
+
+############################## 200320 ###########################
+# 8gpu
+# for i in 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+# 					--filter_bn \
+# 					--filter_bias	
+# done
+
+# IITP
+# for i in 0.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+# 					--filter_bn \
+# 					--filter_bias	
+# done
+
+############################## 200319 ###########################
+# IITP
+# for i in 1.6
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+# 					--filter_bn \
+# 					--filter_bias	
+# done
+
+# 8gpu-b
+# for i in 12.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+# 					--filter_bn \
+# 					--filter_bias	
+# done
+
+############################## 200319 ###########################
+# IITP
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+# 					--filter_bn \
+# 					--filter_bias	
+# done
+
+# 8gpu
+# for i in 0.0256 0.0128 0.0064 0.0008
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+############################## 200317 ###########################
+# 8gpu
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python large_wd_scaler.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--filter_bn \
+# 					--filter_bias 
+# done
+
+############################## 200315 ###########################
+# 8gpu
+# for i in 0.0064 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python large_wd_scaler.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--filter_bn \
+# 					--filter_bias	
+# done
+
+############################## 200312 ###########################
+# IITP
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+# 8gpu-ha
+# for i in 0.0004 0.0002 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+############################## 200311 ###########################
+# 8gpu-ha
+# for i in 0.0008
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+############################## 200310 ###########################
+# 8gpu
+# for i in 0.0256 0.0128 0.0004 0.0002 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu-ha
+# for i in 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# group2
+# for i in 0.0001 0.0002 0.0004 0.0008 0.0016 0.0032 0.0064 0.0128 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu-h
+# for i in 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu-ha
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+############################## 200308 ###########################
+# 8gpu
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python large_wd_scaler.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--filter_bn \
+# 					--filter_bias	
+# done
+
+# 8gpu
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--filter_bn \
+# 					--filter_bias \
+# 					--weight_multiplier 1		
+# done
+
+# group2
+# for i in 0.2
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+#  					--warm_up_epoch 15 \
+# 					--filter_bn \
+# 					--filter_bias	
+# done
+
+############################## 200306 ###########################
+# 8gpu
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--filter_bn \
+# 					--filter_bias		
+# done
+
+# 8gpu-b
+# for i in 0.0128 0.0064 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu-b
+# for i in 0.0064 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu-h
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu
+# for i in 0.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python lr_scaler.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0001 \
+# 					--lr $i \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias					 
+# done
+
+# 8gpu-ha
+# for i in 0.0008 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+############################## 200305 ###########################
+# 8gpu-ha
+# for i in 0.0032 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu-o
+# for i in 0.0256 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python wd_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu-h
+# for i in 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python lr_scaler.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 15 \
+# 					--filter_bn \
+# 					--filter_bias					 
+# done
+
+# group2
+# for i in 0.0001 0.0002 0.0004 0.0008 0.0016 0.0032 0.0128 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5
+# done
+
+# IITP
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+# group4
+# for i in 3.2
+# do
+# 	CUDA_VISIBLE_DEVICES=2,3 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0002 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 15 
+# done
+
+# 8gpu
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+############################## 200304 ###########################
+# 8gpu
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+# # 8gpu
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--filter_bn \
+# 					--filter_bias
+# done
+
+# # 8gpu
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--filter_bn
+# done
+
+# # 8gpu
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+
+
+
+
+
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# group2
+# for i in 0.0001 0.0002 0.0004 0.0008 0.0016 0.0032 0.0064 0.0128 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 512 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+############################## 200303 ###########################
+# 8gpu
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python test.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# 8gpu
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python test.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--filter_bias_and_bn 
+# done
+
+# IITP
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=2,3 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 3.2 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 15 
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python test.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn 
+# done
+
+# IITP
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=2,3 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 3.2 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 15 
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python test.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 512 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.2 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn 
+# done
+
+# 8gpu-o
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=6,7 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 3.2 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 15 
+# done
+
+############################## 200302 ###########################
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python test.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 512 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.2 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn \
+# 					--amp
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python test.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python test.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+############################## 200301 ###########################
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python test.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# IITP
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/data/ILSVRC2012/ \
+# 					--num_workers 16 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 
+# done
+
+# 8gpu-b
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# group2
+# for i in 0.0001 0.0002 0.0004 0.0008 0.0016 0.0032 0.0064 0.0128 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+############################## 200228 ###########################
+# 8gpu-o
+# for i in 0.0004 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# # 8gpu-h
+# for i in 0.0008 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu-b
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8GPU-o
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/data/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 \
+# 					--filter_bias_and_bn
+# done
+
+# 8GPU-o
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# # 8gpu-h
+# for i in 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/data/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# 8gpu-b
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 512 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+############################## 200227 ###########################
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/data/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# 8gpu-b
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8gpu-o
+# for i in 0.0256 0.0128 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# # # 8gpu-h
+# for i in 0.0032 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--dataroot /home/user/ssd1/dataset/ \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# 8GPU-o
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/dataset/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/data/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+# # 8gpu-j
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+############################## 200226 ###########################
+# # 8gpu-j
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# # group4
+# for i in 0.0001 0.0002 0.0004 0.0008 0.0016 0.0032 0.0064 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# group4
+# for i in 0.0001 0.0002 0.0004 0.0008 0.0016 0.0032 0.0064 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 3 4 \
+# 					--zero_init_residual
+# done
+
+# IITP
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/data/ILSVRC2012/ \
+# 					--num_workers 16 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 0 
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python main.0.0.2.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/data/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.4 \
+# 					--nesterov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--zero_init_residual \
+# 					--warm_up_epoch 5 \
+# 					--filter_bias_and_bn
+# done
+
+
+############################## 200225 ###########################
+# group2
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/data/ILSVRC2012/ \
+# 					--num_workers 8 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--nestrov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50 \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 \
+# 					--zero_init_residual
+# done
+
+
+# 8GPU
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset imagenet \
+# 					--dataroot /home/user/ssd1/data/ILSVRC2012/ \
+# 					--num_workers 32 \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--nestrov \
+# 					--momentum 0.9 \
+# 					--net_type resnet50 \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 \
+# 					--zero_init_residual
+# done
+
+
+############################## 200224 ###########################
+# IITP
+# for i in 1.6 0.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0002 \
+# 					--wd_off_epoch 300 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--warm_up_epoch 15 \
+# 					--zero_init_residual
+# done
+
+# IITP
+# for i in 1.6 0.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0002 \
+# 					--wd_off_epoch 300 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--warm_up_epoch 15 \
+# 					--zero_init_residual
+# done
+
+############################## 200223 ###########################
+# 8GPU
+# for i in 3.2 1.6 0.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0002 \
+# 					--wd_off_epoch 300 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type resnet18 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--warm_up_epoch 15
+# done
+
+# IITP
+# for i in 3.2 1.6 0.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay 0.0001 \
+# 					--wd_off_epoch 300 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 \
+# 					--warm_up_epoch 15
+# done
+
+############################## 200222 ###########################
+# IITP
+# for i in 15 30 5 
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--wd_off_epoch 300 \
+# 					--lr 6.4 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 1 2 \
+# 					--warm_up_epoch $i
+# done
+
+# 8GPU
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2
+# done
+
+# 8GPU
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2 \
+# 					--weight_multiplier 1
+# done
+
+############################## 200221 ###########################
+# 8GPU
+# for i in 15 30 5 
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python main.0.0.2.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--wd_off_epoch 300 \
+# 					--lr 6.4 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--seed 0 1 2 \
+# 					--warm_up_epoch $i
+# done
+
+############################## 200216 ###########################
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--weight_multiplier 1
+# done
+############################## 200128 ###########################
+# 8GPU
+# for i in 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--wd_off_epoch 300 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--warm_up_epoch 20 \
+# 					--filter_bias_and_bn 
+# done
+
+############################## 200127 ###########################
+# IITP
+# for i in 0.2 0.4 0.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.0001 \
+# 					--wd_off_epoch 300 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--warm_up_epoch 5
+# done
+
+# 8GPU
+# for i in 6.4
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--wd_off_epoch 300 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--warm_up_epoch 5
+# done
+
+############################## 200126 ###########################
+# 8GPU
+# for i in 0.2 0.4 0.8
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay 0.0001 \
+# 					--wd_off_epoch 300 \
+# 					--lr $i \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--warm_up_epoch 5
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 1.6 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs_lr/ \
+# 					--warm_up_epoch 5
+# done
+
+
+############################## 200119 ###########################
+# group4
+# for i in 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 32 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+
+# group4
+# for i in 0.0008
+# do
+# 	CUDA_VISIBLE_DEVICES=2 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 32 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200114 ###########################
+# 8GPU
+# for i in 0.0002
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 3000 \
+# 					--epoch_step 1000 2000 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 3000 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/ \
+# 					--seed 0 1 2
+# done
+
+
+# IITP
+# for i in 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 32 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 1.6 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200113 ###########################
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 1.6 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# IITP
+# for i in 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 32 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200112 ###########################
+# # 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 1.6 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# group2
+# for i in 0.00005
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # group2
+# for i in 0.00005
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+####################.########## 200111 ###########################
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 512 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 256 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# IITP
+# for i in 0.00005
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200109 ###########################
+# # 8gpu - old
+# for i in 0.00005
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # 8gpu - old
+# for i in 0.0128 0.0064 0.0032 0.0016 0.0008 0.0256 0.0004 0.0002 0.0001 0.00005
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200109 ###########################
+# group4
+# for i in 0.00005
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# 8GPU
+# for i in 0.00005
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# group2
+# for i in 0.00005
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# group2
+# for i in 0.0128 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# IITP
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 32 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# 8gpu - J
+# for i in 0.00005
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# group2
+# for i in 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200108 ###########################
+# 8gpu - old
+# for i in 0.0016 0.0008 0.0004 0.0002 0.0001 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# 8GPU
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# 8gpu
+# for i in 0.0256 0.0016 0.0008 0.0004 0.0002 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # 8gpu - jong
+# for i in 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # group4
+# for i in 0.0008
+# do
+# 	CUDA_VISIBLE_DEVICES=2,3 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200107 ###########################
+# # group2
+# for i in 0.0008 0.0004 0.0002 0.0001 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # 8gpu - old
+# for i in 0.0064 0.0128
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar10 \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # group2
+# for i in 0.0016
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # # 8gpu - jong
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200106 ###########################
+# # 8gpu - jong
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+
+# # # group4
+# for i in 0.0064 0.0128 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=2,3 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # 8gpu - jong
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--dataset cifar100 \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # IITP
+# for i in 0.0004
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 32 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # group4
+# for i in 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200104 ###########################
+# # 8GPU
+# for i in 0.0016 0.0008 0.0004 0.0002 0.0001 0.0128 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200104 ###########################
+# # IITP
+# for i in 0.0001
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 32 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # 8GPU-Jong
+# for i in 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 200103 ###########################
+# # IITP
+# for i in 0.0032 0.0128 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # 8GPU
+# for i in 0.0032 0.0064 0.0128 0.0256
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # group4
+# for i in 0.0016 0.0032
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # group2
+# for i in 0.0016 0.0032 0.0064  
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# # 8GPU-Jong
+# for i in 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 4096 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+############################## 201225 ###########################
+# # IITP
+# for i in 0.0001 0.0002 0.0004 0.0008 0.0016 0.0032 0.0064
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 2048 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# 8GPU - J
+# for i in 0.0001 0.0002 
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+# 8GPU
+# # for i in 0.0001
+# for i in 0.0001 0.0002 0.0003 0.0004 0.0005
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 64 \
+# 					--weight_decay $i \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100 \
+# 					--save_model \
+# 					--save_dir ./logs/
+# done
+
+
+############################## 201215 ###########################
+# 8GPU
+# for i in 0.03
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0128 \
+# 					--wd_off_epoch 300 \
+# 					--lr 0.1 \
+# 					--momentum 0.9 \
+# 					--std_weight 1 \
+# 					--norm_grad_ratio $i \
+# 					--weight_multiplier 0.1 \
+# 					--net_type densnetBC100
+# done
+
+# 8GPU
+# for i in 300
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 16384 \
+# 					--weight_decay 0.0256 \
+# 					--wd_off_epoch $i \
+# 					--lr 0.1 \
+# 					--std_weight 3
+
+# done
+
+# 8GPU
+# for i in 300
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0256 \
+# 					--wd_off_epoch $i \
+# 					--lr 0.05
+
+# done
+
+
+############################## 201129 ###########################
+# 8GPU
+# for i in 500
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--epochs 500 \
+# 					--epoch_step 500 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.002 \
+# 					--wd_off_epoch $i \
+# 					--seed 0 1 2 3 4
+# done
+
+
+############################## 201125 ###########################
+# 8GPU
+# for i in 0 200
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 8192 \
+# 					--weight_decay 0.0128 \
+# 					--wd_off_epoch $i
+# done
+
+
+############################## 201124 ###########################
+# IITP
+# for i in 0 100 200 300
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 1024 \
+# 					--weight_decay 0.0005 \
+# 					--wd_off_epoch $i
+# done
+
+
+# 8GPU
+# # for i in $(seq 0 25 100)
+# for i in 200
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python critical.0.0.1.py \
+# 					--epochs 300 \
+# 					--batch_size 128 \
+# 					--weight_decay 0.0005 \
+# 					--wd_off_epoch $i
+# done
