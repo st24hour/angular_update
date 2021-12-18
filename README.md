@@ -1,2 +1,2 @@
 # weight_direction
-explaining generalization by weight direction and SDEs
+explaining generalization by weight direction and SDE
