@@ -1,3 +1,18 @@
+# ICML
+# group4
+# nvidia-docker run --shm-size=128G --cpus=12 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/user/jusung/:/home/user/jusung/ -w $(pwd) \
+# 	st24hour/pytorch:1.6.0_large_batch_v2 \
+# 	sh train3.sh
+
+# 8GPU - ICML, ICML2, ICML3
+nvidia-docker run --shm-size=256G --cpus=40 -it --rm -v $(pwd):$(pwd) \
+	-v /home/siit/ssd1/jusung/:/home/user/jusung/ -w $(pwd) \
+	st24hour/pytorch:1.6.0_large_batch_v2 \
+	sh train4.sh
+
+###############################################################################################
+
 # 42, 113
 # nvidia-docker run --cpus=2 -it --rm -v $(pwd):$(pwd) -v /home/user/jusung/:/home/user/jusung/ -w $(pwd) \
 # 	st24hour/pytorch:0.4.1_js00 \

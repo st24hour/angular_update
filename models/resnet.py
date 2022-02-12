@@ -420,8 +420,6 @@ class ResNet_GBN(nn.Module):
                 elif isinstance(m, BasicBlock_GBN):
                     nn.init.constant_(m.bn2.bn.weight, 0)
 
-
-
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1]*(num_blocks-1)
         layers = []
@@ -561,6 +559,7 @@ class ResNet_GBN_invariant2(nn.Module):
                 out = self.layer4(out)
                 out = self.bn2(out)
                 out = F.avg_pool2d(out, 4)
+                # out = F.adaptive_avg_pool2d(out, (1,1))
                 out = out.view(out.size(0), -1)
                 y = self.linear(out)
                 return y
@@ -1263,6 +1262,77 @@ class ResNet_GBN_imagenet_invariant2_noBN(nn.Module):
         out = out.view(out.size(0), -1)
         y = self.linear(out)
         return y
+
+
+class ResNet_GBN_inv_stl(nn.Module):
+    def __init__(self, block, num_blocks, std_weight=1., num_classes=10, zero_init_residual=False, amp=True, eps=1e-05):
+        super(ResNet_GBN_inv_stl, self).__init__()
+        self.amp = amp
+        self.eps = eps
+        self.in_planes = 64
+
+        self.conv1 = conv3x3(3,64)
+        self.bn1 = GBN(64, eps=self.eps)
+        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
+        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
+        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
+        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
+        self.bn2 = GBN_invariant(512, eps=self.eps)
+        self.linear = nn.Linear(512*block.expansion, num_classes)
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                init_js.kaiming_normal_(m.weight, std_weight=std_weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
+                if m.weight is not None:
+                    init_js.constant_(m.weight, 1)
+                    init_js.constant_(m.bias, 0)
+            # elif isinstance(m, nn.Linear):
+            #     init_js.normal_(m.weight, 0, 0.01)
+            #     init_js.normal_(m.bias, 0, 0.01)
+
+        if zero_init_residual:
+            for m in self.modules():
+                if isinstance(m, Bottleneck_GBN):
+                    nn.init.constant_(m.bn3.bn.weight, 0)
+                elif isinstance(m, BasicBlock_GBN):
+                    nn.init.constant_(m.bn2.bn.weight, 0)
+
+    def _make_layer(self, block, planes, num_blocks, stride):
+        strides = [stride] + [1]*(num_blocks-1)
+        layers = []
+        for stride in strides:
+            layers.append(block(self.in_planes, planes, stride, eps=self.eps))
+            self.in_planes = planes * block.expansion
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        if self.amp:
+            with autocast():
+                out = F.relu(self.bn1(self.conv1(x)))
+                out = self.layer1(out)
+                out = self.layer2(out)
+                out = self.layer3(out)
+                out = self.layer4(out)
+                out = self.bn2(out)
+                # out = F.avg_pool2d(out, 4)
+                out = F.adaptive_avg_pool2d(out, (1,1))
+                out = out.view(out.size(0), -1)
+                y = self.linear(out)
+                return y
+        else:
+            out = F.relu(self.bn1(self.conv1(x)))
+            out = self.layer1(out)
+            out = self.layer2(out)
+            out = self.layer3(out)
+            out = self.layer4(out)
+            out = self.bn2(out)
+            # out = F.avg_pool2d(out, 4)
+            out = F.adaptive_avg_pool2d(out, (1,1))
+            out = out.view(out.size(0), -1)
+            y = self.linear(out)
+            return y
+
         
 def resnet18(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05, momentum=0.1):
     return ResNet(BasicBlock, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
@@ -2622,7 +2692,7 @@ def resnet152(num_classes):
     return ResNet(Bottleneck, [3,8,36,3], num_classes=num_classes)
 
 
-def resnet18_GBN(num_classes, std_weight=1., zero_init_residual=False):
+def resnet18_GBN(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
     return ResNet_GBN(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual)
 
 def resnet18_GBN_invariant(num_classes, std_weight=1., zero_init_residual=False):
@@ -2630,6 +2700,10 @@ def resnet18_GBN_invariant(num_classes, std_weight=1., zero_init_residual=False)
 
 def resnet18_GBN_invariant2(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
     return ResNet_GBN_invariant2(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
+                                amp=amp, eps=eps)
+
+def resnet18_GBN_inv_stl(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
+    return ResNet_GBN_inv_stl(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
                                 amp=amp, eps=eps)
 
 def resnet18_GBN_bn_fix(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
