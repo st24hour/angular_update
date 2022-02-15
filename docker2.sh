@@ -6,9 +6,9 @@
 # 	sh train2.sh
 
 # 8GPU - ICML, ICML2, ICML3
-nvidia-docker run --shm-size=256G --cpus=40 -it --rm -v $(pwd):$(pwd) \
-	-v /home/siit/ssd1/jusung/:/home/user/jusung/ -w $(pwd) \
-	st24hour/pytorch:1.6.0_large_batch_v2 \
+nvidia-docker run --shm-size=1024G --cpus=40 -it --rm -v $(pwd):$(pwd) \
+	-v /home/siit/ssd1/:/home/user/ -w $(pwd) \
+	st24hour/pytorch:1.10.0_angular_update \
 	sh train2.sh
 	
 ###############################################################################################

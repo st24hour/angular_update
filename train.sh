@@ -1,5 +1,5 @@
 #!/bin/bash
-############################## 220127 ###########################
+############################## 220214 ###########################
 # ICML
 for i in 0
 do
@@ -19,6 +19,27 @@ do
 					--warm_up_epoch 0 \
 					--save_dir './logs_trash/'
 done
+
+############################## 220127 ###########################
+# ICML
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=0,1,2,3 python direction.0.0.2.py \
+# 					--dataset imagenet \
+# 					--num_workers 40 \
+# 					--num_sample $i \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--lr 0.1 \
+# 					--weight_decay 0.0001 \
+# 					--momentum 0.9 \
+# 					--net_type efficientnet_b0_inv \
+# 					--save_model \
+# 					--seed 0 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_trash/'
+# done
 
 ############################## 220127 ###########################
 # ICML3

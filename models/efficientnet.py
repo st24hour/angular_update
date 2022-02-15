@@ -12,11 +12,12 @@ from torchvision.models._utils import _make_divisible
 from torchvision.ops import StochasticDepth
 
 # by JS
+from .misc_invariant import SqueezeExcitation_invariant
 from .gbn import GBN
 from .gbn import GBN_invariant
 from torch.cuda.amp import autocast
 
-__all__ = ["EfficientNet", "efficientnet_b0_inv", "efficientnet_b1", "efficientnet_b2", "efficientnet_b3",
+__all__ = ["EfficientNet", "efficientnet_b0_inv", "efficientnet_b0", "efficientnet_b1", "efficientnet_b2", "efficientnet_b3",
            "efficientnet_b4", "efficientnet_b5", "efficientnet_b6", "efficientnet_b7"]
 
 
@@ -134,6 +135,9 @@ class EfficientNet(nn.Module):
             norm_layer (Optional[Callable[..., nn.Module]]): Module specifying the normalization layer to use
         """
         super().__init__()
+        
+        # JS
+        invariant = kwargs.setdefault('invariant', False)
 
         if not inverted_residual_setting:
             raise ValueError("The inverted_residual_setting should not be empty")
@@ -171,7 +175,11 @@ class EfficientNet(nn.Module):
                 # adjust stochastic depth probability based on the depth of the stage block
                 sd_prob = stochastic_depth_prob * float(stage_block_id) / total_stage_blocks
 
-                stage.append(block(block_cnf, sd_prob, norm_layer))
+                # JS
+                if invariant:
+                    stage.append(block(block_cnf, sd_prob, norm_layer, se_layer=SqueezeExcitation_invariant))
+                else:
+                    stage.append(block(block_cnf, sd_prob, norm_layer))
                 stage_block_id += 1
 
             layers.append(nn.Sequential(*stage))
@@ -246,7 +254,12 @@ def _efficientnet_model(
     progress: bool,
     **kwargs: Any
 ) -> EfficientNet:
-    model = EfficientNet(inverted_residual_setting, dropout, **kwargs)
+    # JS
+    invariant = kwargs.setdefault('invariant', False)
+    if invariant:
+        model = EfficientNet(inverted_residual_setting, dropout, norm_layer=GBN invariant=invariant, **kwargs)
+    else:
+        model = EfficientNet(inverted_residual_setting, dropout, **kwargs)
     if pretrained:
         if model_urls.get(arch, None) is None:
             raise ValueError("No checkpoint is available for model type {}".format(arch))
@@ -256,6 +269,18 @@ def _efficientnet_model(
 
 
 def efficientnet_b0_inv(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> EfficientNet:
+    """
+    EfficientNet B0 with invariace and ghost BatchNorm
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    inverted_residual_setting = _efficientnet_conf(width_mult=1.0, depth_mult=1.0, **kwargs)
+    return _efficientnet_model("efficientnet_b0", inverted_residual_setting, 0.2, pretrained, progress, invariant=True, **kwargs)
+
+
+def efficientnet_b0_(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> EfficientNet:
     """
     Constructs a EfficientNet B0 architecture from
     `"EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks" <https://arxiv.org/abs/1905.11946>`_.
