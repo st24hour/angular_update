@@ -257,7 +257,8 @@ def _efficientnet_model(
     # JS
     invariant = kwargs.setdefault('invariant', False)
     if invariant:
-        model = EfficientNet(inverted_residual_setting, dropout, norm_layer=GBN invariant=invariant, **kwargs)
+        kwargs = { **kwargs, **{"invariant":invariant}}
+        model = EfficientNet(inverted_residual_setting, dropout, norm_layer=GBN, **kwargs)
     else:
         model = EfficientNet(inverted_residual_setting, dropout, **kwargs)
     if pretrained:
@@ -280,7 +281,7 @@ def efficientnet_b0_inv(pretrained: bool = False, progress: bool = True, **kwarg
     return _efficientnet_model("efficientnet_b0", inverted_residual_setting, 0.2, pretrained, progress, invariant=True, **kwargs)
 
 
-def efficientnet_b0_(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> EfficientNet:
+def efficientnet_b0(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> EfficientNet:
     """
     Constructs a EfficientNet B0 architecture from
     `"EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks" <https://arxiv.org/abs/1905.11946>`_.

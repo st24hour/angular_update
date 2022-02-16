@@ -7,7 +7,7 @@ do
 					--dataset imagenet \
 					--num_workers 40 \
 					--num_sample $i \
-					--alpha_sqaure 10 \
+					--alpha_sqaure 100 \
 					--amp \
 					--epochs 90 \
 					--epoch_step 30 60 80 \
