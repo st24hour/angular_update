@@ -654,8 +654,23 @@ if __name__ == '__main__':
     # if args.lr > 0.1 and args.alpha_sqaure is None:
     #     args.save_dir = 'logs_invariant_lr/'
     
-    local_dir = '/home/user/jusung/weight_direction/'
-    copy_dir = args.save_dir
+    if args.GCP: 
+        local_dir = '/home/user/jusung/weight_direction/'
+    else:
+        local_dir = '/home/user/code/jusung/weight_direction/' # -> in dockker, shared_storage/code/jusung/weight_direction
+
+    if args.GCP:
+        if args.dataset == "imagenet":
+            dataroot = /home/user/data/lgaivision-imagenet1k-us
+        else:
+            dataroot = /home/user/code/jusung/dataset # CIFAR10 is saved to shared_storage/code/juseung/dataset
+    else: # KAIST
+        if args.dataset == "imagenet":
+            dataroot = /home/user/dataset/ILSVRC2012
+        elif args.datset == "tinyimagenet":
+            dataroot = /home/user/dataset/tiny-imagenet-200
+        else: # CIFAR-10, CIFAR-100, STL-10
+            dataroot = /home/user/dataset
 
     if args.alpha_sqaure is not None:
         args.lr = args.lr*args.alpha_sqaure
@@ -669,6 +684,7 @@ if __name__ == '__main__':
     os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample), 0o777)
     os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample)+'/batch_'+str(args.batch_size), 0o777)
 
+    # FTP location (where we save logs)
     copy_dir = '{}{}/{}/num_data_{}/batch_{}/\
 WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}_'.format(
         args.save_dir, args.dataset, args.net_type, args.num_sample, args.batch_size, \

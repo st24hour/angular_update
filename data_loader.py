@@ -7,7 +7,7 @@ from torchvision import datasets, transforms
 from torch.utils.data import Dataset, DataLoader
 import os
 
-
+# STL10 is automatically saved similar to cifar10
 def getSTL10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=True, **kwargs):
     data_root = os.path.expanduser(os.path.join(data_root, 'stl10-data'))
     num_workers = kwargs.setdefault('num_workers', 16)
@@ -57,8 +57,8 @@ def getSTL10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, va
 
 def getTINYIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/tiny-imagenet-200/', train=True, val=True, **kwargs):
     ds = []
-    traindir = os.path.join(data_root, 'tiny-imagenet-200/train')
-    valdir = os.path.join(data_root, 'tiny-imagenet-200/val')
+    traindir = os.path.join(data_root, 'train')
+    valdir = os.path.join(data_root, 'val')
 
     num_workers = kwargs.setdefault('num_workers', 4)
     drop_last = kwargs.setdefault('drop_last', True)
@@ -103,8 +103,8 @@ def getTINYIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/tiny-imagenet
 
 def getIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/ILSVRC2012/', train=True, val=True, **kwargs):
     ds = []
-    traindir = os.path.join(data_root, 'ILSVRC2012/train')
-    valdir = os.path.join(data_root, 'ILSVRC2012/val')
+    traindir = os.path.join(data_root, 'train')
+    valdir = os.path.join(data_root, 'val')
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 

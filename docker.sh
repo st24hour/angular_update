@@ -11,11 +11,11 @@ nvidia-docker run --shm-size=1024G --cpus=40 -it --rm -v $(pwd):$(pwd) \
 	st24hour/pytorch:1.10.0_angular_update \
 	sh train.sh
 
-# 8GPU - ICML, ICML2, ICML3
-# nvidia-docker run --ipc=host --cpus=40 -it --rm -v $(pwd):$(pwd) \
-# 	-v /home/siit/ssd1/:/home/user/ -w $(pwd) \
-# 	st24hour/pytorch:1.6.0_large_batch_v2 \
-# 	sh train.sh
+# GCP
+docker run --gpus all --shm-size=40g --ulimit memlock=-1 --ulimit stack=67108864 -it -d \
+	-p 8000-8100:8000-8100 -v /etc/localtime:/etc/localtime:ro -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
+	-v /shared_storage:/home/user/ --name juseung st24hour/pytorch:1.10.0_angular_update \
+	sh train.sh
 
 ###############################################################################################
 
