@@ -4,6 +4,7 @@
 for i in 0
 do
 	CUDA_VISIBLE_DEVICES=0,1,2,3 python direction.0.0.2.py \
+					--GCP \
 					--dataset imagenet \
 					--num_workers 40 \
 					--num_sample $i \
