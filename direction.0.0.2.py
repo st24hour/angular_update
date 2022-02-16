@@ -604,6 +604,8 @@ if __name__ == '__main__':
                         help='number of classes (automatically setted in main function)')
     parser.add_argument('--dataroot', default='/home/user/dataset', 
                         help='path to dataset')
+    parser.add_argument('--GCP', default=False, action='store_true, 
+                        help='run on GCP?')
     parser.add_argument('--print-freq', default=10, type=int,
                         help='print frequency (default: 10)')
     parser.add_argument('--test_freq', default=1, type=int,
