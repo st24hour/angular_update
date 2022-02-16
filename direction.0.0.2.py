@@ -661,16 +661,16 @@ if __name__ == '__main__':
 
     if args.GCP:
         if args.dataset == "imagenet":
-            dataroot = /home/user/data/lgaivision-imagenet1k-us
+            dataroot = '/home/user/data/lgaivision-imagenet1k-us'
         else:
-            dataroot = /home/user/code/jusung/dataset # CIFAR10 is saved to shared_storage/code/juseung/dataset
+            dataroot = '/home/user/code/jusung/dataset' # CIFAR10 is saved to shared_storage/code/juseung/dataset
     else: # KAIST
         if args.dataset == "imagenet":
-            dataroot = /home/user/dataset/ILSVRC2012
+            dataroot = '/home/user/dataset/ILSVRC2012'
         elif args.datset == "tinyimagenet":
-            dataroot = /home/user/dataset/tiny-imagenet-200
+            dataroot = '/home/user/dataset/tiny-imagenet-200'
         else: # CIFAR-10, CIFAR-100, STL-10
-            dataroot = /home/user/dataset
+            dataroot = '/home/user/dataset'
 
     if args.alpha_sqaure is not None:
         args.lr = args.lr*args.alpha_sqaure
