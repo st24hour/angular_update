@@ -1,12 +1,12 @@
 #!/bin/bash
 ############################## 220216 ###########################
-# ICML2
+# GCP
 for i in 0
 do
-	CUDA_VISIBLE_DEVICES=0,1,2,3 python direction.0.0.2.py \
+	CUDA_VISIBLE_DEVICES=0 python direction.0.0.2.py \
 					--GCP \
-					--dataset imagenet \
-					--num_workers 40 \
+					--dataset cifar10 \
+					--num_workers 10 \
 					--num_sample $i \
 					--epochs 90 \
 					--epoch_step 30 60 80 \
@@ -14,11 +14,11 @@ do
 					--lr 0.1 \
 					--weight_decay 0.0001 \
 					--momentum 0.9 \
-					--net_type efficientnet_b0_inv \
+					--net_type efficientnet_b0 \
 					--save_model \
-					--seed 222222 \
+					--seed 0 \
 					--warm_up_epoch 0 \
-					--save_dir './logs_trash/'
+					--save_dir './logs_trash_invariant_test/'
 done
 
 ############################## 220214 ###########################

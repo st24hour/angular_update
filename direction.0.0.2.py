@@ -657,22 +657,22 @@ if __name__ == '__main__':
     #     args.save_dir = 'logs_invariant_lr/'
     
     if args.GCP: 
-        local_dir = '/home/user/jusung/weight_direction/'
+        local_dir = '/home/user/code/jusung/weight_direction/' # -> in docker, shared_storage/code/jusung/weight_direction
     else:
-        local_dir = '/home/user/code/jusung/weight_direction/' # -> in dockker, shared_storage/code/jusung/weight_direction
+        local_dir = '/home/user/jusung/weight_direction/'
 
     if args.GCP:
         if args.dataset == "imagenet":
-            dataroot = '/home/user/data/lgaivision-imagenet1k-us'
+            args.dataroot = '/home/user/data/lgaivision-imagenet1k-us'
         else:
-            dataroot = '/home/user/code/jusung/dataset' # CIFAR10 is saved to shared_storage/code/juseung/dataset
+            args.dataroot = '/home/user/code/jusung/dataset' # CIFAR10 is saved to shared_storage/code/juseung/dataset
     else: # KAIST
         if args.dataset == "imagenet":
-            dataroot = '/home/user/dataset/ILSVRC2012'
+            args.dataroot = '/home/user/dataset/ILSVRC2012'
         elif args.datset == "tinyimagenet":
-            dataroot = '/home/user/dataset/tiny-imagenet-200'
+            args.dataroot = '/home/user/dataset/tiny-imagenet-200'
         else: # CIFAR-10, CIFAR-100, STL-10
-            dataroot = '/home/user/dataset'
+            args.dataroot = '/home/user/dataset'
 
     if args.alpha_sqaure is not None:
         args.lr = args.lr*args.alpha_sqaure

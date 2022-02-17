@@ -17,6 +17,8 @@ docker run --gpus all --shm-size=40g --ulimit memlock=-1 --ulimit stack=67108864
 	-v /shared_storage:/home/user/ --name juseung st24hour/pytorch:1.10.0_angular_update \
 	sh train.sh
 
+# docker run --gpus all --shm-size=40g --ulimit memlock=-1 --ulimit stack=67108864 -it --rm --pid=host -v $(pwd):$(pwd) -w $(pwd) -p 8000-8100:8000-8100 -v /etc/localtime:/etc/localtime:ro -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v /shared_storage:/home/user/ --name juseung st24hour/pytorch:1.10.0_angular_update
+
 ###############################################################################################
 
 	

@@ -256,8 +256,9 @@ def _efficientnet_model(
 ) -> EfficientNet:
     # JS
     invariant = kwargs.setdefault('invariant', False)
+    eps = kwargs.setdefault('eps', 1e-05)
     if invariant:
-        kwargs = { **kwargs, **{"invariant":invariant}}
+        kwargs = { **kwargs, **{"invariant":invariant}, **{"eps":eps}}
         model = EfficientNet(inverted_residual_setting, dropout, norm_layer=GBN, **kwargs)
     else:
         model = EfficientNet(inverted_residual_setting, dropout, **kwargs)
