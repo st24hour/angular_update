@@ -1,25 +1,50 @@
 #!/bin/bash
 
-############################## 220127 ###########################
-# ICMP1
+############################## 220218 ###########################
+# GCP
 for i in 0
 do
 	CUDA_VISIBLE_DEVICES=2 python direction.0.0.2.py \
-					--dataset tinyimagenet \
+					--GCP \
+					--eps 1e-05 \
+					--alpha_sqaure 100000 \
+					--amp \
+					--dataset cifar10 \
 					--num_workers 2 \
 					--num_sample $i \
-					--epochs 120 \
-					--epoch_step 60 90 \
-					--batch_size 256 \
-					--lr 0.8 \
-					--weight_decay 0.0008 \
+					--epochs 300 \
+					--epoch_step 150 225 \
+					--batch_size 128 \
+					--lr 0.1 \
+					--weight_decay 0.0001 \
 					--momentum 0.9 \
-					--net_type resnet18_GBN_inv_stl \
+					--net_type efficientnet_b0_inv \
 					--save_model \
-					--seed 0 1 \
+					--seed 0 \
 					--warm_up_epoch 0 \
-					--save_dir './logs_inv/'
+					--save_dir './logs_trash/'
 done
+
+############################## 220127 ###########################
+# ICMP1
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=2 python direction.0.0.2.py \
+# 					--dataset tinyimagenet \
+# 					--num_workers 2 \
+# 					--num_sample $i \
+# 					--epochs 120 \
+# 					--epoch_step 60 90 \
+# 					--batch_size 256 \
+# 					--lr 0.8 \
+# 					--weight_decay 0.0008 \
+# 					--momentum 0.9 \
+# 					--net_type resnet18_GBN_inv_stl \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_inv/'
+# done
 
 # group4
 # for i in 50000

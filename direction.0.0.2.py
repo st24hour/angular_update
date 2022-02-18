@@ -463,6 +463,7 @@ def main(args, seed):
                 for name, param in model.named_parameters():
                     # make the network scale invariant
                     if 'linear' in name or 'classifier' in name:
+                    # if 'linear' in name:
                         if 'inv' in args.net_type:  # invariant
                             param.requires_grad = False
                     else:
@@ -953,10 +954,11 @@ WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}
     fig.set_size_inches(3.75,3.75)
     fig.savefig('{}/weight_polar.pdf'.format(args.save_dir), dpi=300) 
 
-    try:
-        shutil.copytree(args.save_dir, copy_dir)
-        os.chmod(copy_dir, 0o777)
-    except:
-        shutil.copytree(args.save_dir, copy_dir+'_copy2')
-        os.chmod(copy_dir+'_copy2', 0o777)
+    if not args.GCP:
+        try:
+            shutil.copytree(args.save_dir, copy_dir)
+            os.chmod(copy_dir, 0o777)
+        except:
+            shutil.copytree(args.save_dir, copy_dir+'_copy2')
+            os.chmod(copy_dir+'_copy2', 0o777)
     

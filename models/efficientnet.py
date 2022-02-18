@@ -121,6 +121,8 @@ class EfficientNet(nn.Module):
             num_classes: int = 1000,
             block: Optional[Callable[..., nn.Module]] = None,
             norm_layer: Optional[Callable[..., nn.Module]] = None,
+            invariant: bool = False,    # JS
+            eps: float = 1e-05,         # JS
             **kwargs: Any
     ) -> None:
         """
@@ -137,7 +139,9 @@ class EfficientNet(nn.Module):
         super().__init__()
         
         # JS
-        invariant = kwargs.setdefault('invariant', False)
+        # self.invariant = kwargs.setdefault('invariant', False)  # 아니 그럼 여기서도 이렇게 할 필요가 없는데??
+        # self.eps = kwargs.setdefault('eps', 1e-4)
+        self.invariant = invariant
 
         if not inverted_residual_setting:
             raise ValueError("The inverted_residual_setting should not be empty")
@@ -176,8 +180,8 @@ class EfficientNet(nn.Module):
                 sd_prob = stochastic_depth_prob * float(stage_block_id) / total_stage_blocks
 
                 # JS
-                if invariant:
-                    stage.append(block(block_cnf, sd_prob, norm_layer, se_layer=SqueezeExcitation_invariant))
+                if self.invariant:
+                    stage.append(block(block_cnf, sd_prob, norm_layer, se_layer=partial(SqueezeExcitation_invariant, eps=eps)))   # 여기에다가 eps를 전달 해줘야 되는데... block이 결국 MBConv module임
                 else:
                     stage.append(block(block_cnf, sd_prob, norm_layer))
                 stage_block_id += 1
@@ -209,16 +213,17 @@ class EfficientNet(nn.Module):
                 if m.weight is not None:
                     nn.init.ones_(m.weight)
                     nn.init.zeros_(m.bias)
-            elif isinstance(m, nn.Linear):
-                init_range = 1.0 / math.sqrt(m.out_features)
-                nn.init.uniform_(m.weight, -init_range, init_range)
-                nn.init.zeros_(m.bias)
+            # elif isinstance(m, nn.Linear):
+            #     init_range = 1.0 / math.sqrt(m.out_features)
+            #     nn.init.uniform_(m.weight, -init_range, init_range)
+            #     nn.init.zeros_(m.bias)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)
 
         # by JS - for scale-invariance
-        x = self.bn(x)
+        if self.invariant:
+            x = self.bn(x)
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
@@ -227,7 +232,7 @@ class EfficientNet(nn.Module):
 
         return x
 
-    @autocast()
+    # @autocast()
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
 
@@ -254,14 +259,7 @@ def _efficientnet_model(
     progress: bool,
     **kwargs: Any
 ) -> EfficientNet:
-    # JS
-    invariant = kwargs.setdefault('invariant', False)
-    eps = kwargs.setdefault('eps', 1e-05)
-    if invariant:
-        kwargs = { **kwargs, **{"invariant":invariant}, **{"eps":eps}}
-        model = EfficientNet(inverted_residual_setting, dropout, norm_layer=GBN, **kwargs)
-    else:
-        model = EfficientNet(inverted_residual_setting, dropout, **kwargs)
+    model = EfficientNet(inverted_residual_setting, dropout, **kwargs)
     if pretrained:
         if model_urls.get(arch, None) is None:
             raise ValueError("No checkpoint is available for model type {}".format(arch))
@@ -269,8 +267,8 @@ def _efficientnet_model(
         model.load_state_dict(state_dict)
     return model
 
-
-def efficientnet_b0_inv(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> EfficientNet:
+# JS
+def efficientnet_b0_inv(pretrained: bool = False, progress: bool = True, eps = 1e-5, **kwargs: Any) -> EfficientNet:
     """
     EfficientNet B0 with invariace and ghost BatchNorm
 
@@ -279,7 +277,8 @@ def efficientnet_b0_inv(pretrained: bool = False, progress: bool = True, **kwarg
         progress (bool): If True, displays a progress bar of the download to stderr
     """
     inverted_residual_setting = _efficientnet_conf(width_mult=1.0, depth_mult=1.0, **kwargs)
-    return _efficientnet_model("efficientnet_b0", inverted_residual_setting, 0.2, pretrained, progress, invariant=True, **kwargs)
+    return _efficientnet_model("efficientnet_b0", inverted_residual_setting, 0.2, pretrained, progress, 
+                                norm_layer=partial(GBN, eps=eps), invariant=True, eps=eps, **kwargs)  # 이게 왜 되는거지?? GBN이 function이 아니라 class인데? trick인가?
 
 
 def efficientnet_b0(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> EfficientNet:

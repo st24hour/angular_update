@@ -42,7 +42,7 @@ class GBN_invariant(torch.nn.Module):
 
         return torch.cat(res, dim=0)
 
-
+# it is not used in efficientnet_invariant
 class GBN_invariant_1d(torch.nn.Module):
     """
     Ghost Batch Normalization

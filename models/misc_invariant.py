@@ -159,6 +159,7 @@ class SqueezeExcitation_invariant(torch.nn.Module):
         squeeze_channels: int,
         activation: Callable[..., torch.nn.Module] = torch.nn.ReLU,
         scale_activation: Callable[..., torch.nn.Module] = torch.nn.Sigmoid,
+        eps: float = 1e-05 # by JS
     ) -> None:
         super().__init__()
         self.avgpool = torch.nn.AdaptiveAvgPool2d(1)
@@ -167,7 +168,7 @@ class SqueezeExcitation_invariant(torch.nn.Module):
         self.activation = activation()
         self.scale_activation = scale_activation()
         # JS
-        self.bn = GBN_invariant(input_channels)
+        self.bn = GBN_invariant(input_channels, eps=eps)
 
     def _scale(self, input: Tensor) -> Tensor:
         scale = self.avgpool(input)
