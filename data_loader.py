@@ -79,10 +79,10 @@ def getTINYIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/tiny-imagenet
 
     if train:
         if sampler is not None:
-            train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=True, \
+            train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=False, \
                                 sampler=sampler, num_workers=num_workers, drop_last=drop_last)
         else:
-            train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=True, \
+            train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=False, \
                                 shuffle=shuffle, num_workers=num_workers, drop_last=drop_last)
 
 
@@ -129,7 +129,8 @@ def getIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/ILSVRC2012/', tra
             train_dataset, batch_size=batch_size, shuffle=True,
             num_workers=num_workers, pin_memory=True, drop_last=drop_last)
         ds.append(train_loader)
-
+    print(train_dataset)
+    # exit()
     if val:
         val_loader = torch.utils.data.DataLoader(
             datasets.ImageFolder(valdir, transforms.Compose([

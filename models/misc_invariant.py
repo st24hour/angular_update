@@ -179,6 +179,7 @@ class SqueezeExcitation_invariant(torch.nn.Module):
         scale = self.bn(scale)
 
         return self.scale_activation(scale)
+        # return scale
 
     def forward(self, input: Tensor) -> Tensor:
         scale = self._scale(input)

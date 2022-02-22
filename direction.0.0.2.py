@@ -27,7 +27,6 @@ import numpy as np
 import seaborn as sns
 import pandas as pd
 from matplotlib import pyplot as plt
-from datetime import datetime
 # import tensorboard_logger
 from tensorboard_logger.tensorboard_logger import configure, unconfigure, log_value
 # from torch.utils.tensorboard import SummaryWriter
@@ -36,6 +35,7 @@ import data_loader
 # import active_util
 import pdb
 import utils
+import torchsummary
 
 # Training
 def train(logger, train_loader, model, criterion, optimizer, epoch, num_iter_for_update):
@@ -309,7 +309,7 @@ def add_weight_decay(model, weight_decay=1e-4, skip_list=()):
         # print('{}\t shape: {}'.format(name, param.shape))
         if not param.requires_grad:
             continue
-        if 'linear' in name and 'inv' in args.net_type:
+        if ('linear' in name or 'classifier' in name) and 'inv' in args.net_type: # 어차피 FC는 grad 없어서 위에서 걸러지긴 함
             # do not give weight decay to linear layer
             no_decay.append(param)
         elif args.filter_bn_bias:
@@ -354,6 +354,7 @@ def main(args, seed):
         len_dataset = 100000
     elif args.dataset == 'imagenet':
         args.num_classes = 1000
+        len_dataset = 1281167
     elif args.dataset == 'stl10':
         args.num_classes = 10
         len_dataset = 5000
@@ -375,7 +376,7 @@ def main(args, seed):
             checkpoint = torch.load(args.load_dir+'/'+args.checkpoint)
         else:
             print("=> no checkpoint found at '{}'".format(args.load_dir))
-
+    
     # Data
     print('==> Preparing data..')
     if args.num_sample > 0:
@@ -395,7 +396,10 @@ def main(args, seed):
     model_to_call = getattr(models, args.net_type)
     model = model_to_call(num_classes=args.num_classes, zero_init_residual=args.zero_init_residual, amp=args.amp, eps=args.eps)
     model = model.to(device)
+    torchsummary.summary(model, (3, 256, 256),device='cuda')
     model = torch.nn.DataParallel(model)
+    # print(model)
+    # exit()
     
     # for test
     # # for name, param in model.named_parameters():

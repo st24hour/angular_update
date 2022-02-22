@@ -70,7 +70,9 @@ class MBConvConfig:
 
 class MBConv(nn.Module):
     def __init__(self, cnf: MBConvConfig, stochastic_depth_prob: float, norm_layer: Callable[..., nn.Module],
-                 se_layer: Callable[..., nn.Module] = SqueezeExcitation) -> None:
+                 se_layer: Callable[..., nn.Module] = SqueezeExcitation,
+                 activation_layer: Callable[..., nn.Module] = nn.SiLU
+                 ) -> None:
         super().__init__()
 
         if not (1 <= cnf.stride <= 2):
@@ -79,7 +81,7 @@ class MBConv(nn.Module):
         self.use_res_connect = cnf.stride == 1 and cnf.input_channels == cnf.out_channels
 
         layers: List[nn.Module] = []
-        activation_layer = nn.SiLU
+        # activation_layer = nn.ReLU    # JS
 
         # expand
         expanded_channels = cnf.adjust_channels(cnf.input_channels, cnf.expand_ratio)
@@ -94,7 +96,7 @@ class MBConv(nn.Module):
 
         # squeeze and excitation
         squeeze_channels = max(1, cnf.input_channels // 4)
-        layers.append(se_layer(expanded_channels, squeeze_channels, activation=partial(nn.SiLU, inplace=True)))
+        layers.append(se_layer(expanded_channels, squeeze_channels, activation=partial(activation_layer, inplace=True))) # JS
 
         # project
         layers.append(ConvNormActivation(expanded_channels, cnf.out_channels, kernel_size=1, norm_layer=norm_layer,
@@ -107,7 +109,7 @@ class MBConv(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         result = self.block(input)
         if self.use_res_connect:
-            result = self.stochastic_depth(result)
+            result = self.stochastic_depth(result)    # JS - invariant check 하려고 껐다가 다시 킴
             result += input
         return result
 
@@ -117,12 +119,13 @@ class EfficientNet(nn.Module):
             self,
             inverted_residual_setting: List[MBConvConfig],
             dropout: float,
-            stochastic_depth_prob: float = 0.2,
+            stochastic_depth_prob: float = 0.2,   # JS 0.2, 뒤에랑 MBconv 안에도 수정
             num_classes: int = 1000,
             block: Optional[Callable[..., nn.Module]] = None,
             norm_layer: Optional[Callable[..., nn.Module]] = None,
             invariant: bool = False,    # JS
             eps: float = 1e-05,         # JS
+            activation_layer: Optional[Callable[..., nn.Module]] = None, # JS
             **kwargs: Any
     ) -> None:
         """
@@ -155,12 +158,16 @@ class EfficientNet(nn.Module):
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
 
+        # JS
+        if activation_layer is None:
+            activation_layer = nn.SiLU
+
         layers: List[nn.Module] = []
 
         # building first layer
         firstconv_output_channels = inverted_residual_setting[0].input_channels
         layers.append(ConvNormActivation(3, firstconv_output_channels, kernel_size=3, stride=2, norm_layer=norm_layer,
-                                         activation_layer=nn.SiLU))
+                                         activation_layer=activation_layer)) # JS
 
         # building inverted residual blocks
         total_stage_blocks = sum([cnf.num_layers for cnf in inverted_residual_setting])
@@ -177,11 +184,13 @@ class EfficientNet(nn.Module):
                     block_cnf.stride = 1
 
                 # adjust stochastic depth probability based on the depth of the stage block
-                sd_prob = stochastic_depth_prob * float(stage_block_id) / total_stage_blocks
+                sd_prob = stochastic_depth_prob * float(stage_block_id) / total_stage_blocks  # JS
+                # sd_prob = 0 # JS - invariant check 하려고 0으로 했다가 다시 삭제
 
                 # JS
                 if self.invariant:
-                    stage.append(block(block_cnf, sd_prob, norm_layer, se_layer=partial(SqueezeExcitation_invariant, eps=eps)))   # 여기에다가 eps를 전달 해줘야 되는데... block이 결국 MBConv module임
+                    stage.append(block(block_cnf, sd_prob, norm_layer, se_layer=partial(SqueezeExcitation_invariant, eps=eps), 
+                    activation_layer=activation_layer)) # 여기에 SqueezeExcitation_invariant 전달하면서 eps랑 activation_layer 정해줘야 됨
                 else:
                     stage.append(block(block_cnf, sd_prob, norm_layer))
                 stage_block_id += 1
@@ -192,7 +201,7 @@ class EfficientNet(nn.Module):
         lastconv_input_channels = inverted_residual_setting[-1].out_channels
         lastconv_output_channels = 4 * lastconv_input_channels
         layers.append(ConvNormActivation(lastconv_input_channels, lastconv_output_channels, kernel_size=1,
-                                         norm_layer=norm_layer, activation_layer=nn.SiLU))
+                                         norm_layer=norm_layer, activation_layer=activation_layer)) # JS
 
         # by JS
         self.bn = GBN_invariant(lastconv_output_channels)
@@ -200,7 +209,7 @@ class EfficientNet(nn.Module):
         self.features = nn.Sequential(*layers)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.classifier = nn.Sequential(
-            nn.Dropout(p=dropout, inplace=True),
+            nn.Dropout(p=dropout, inplace=True),  # JS - invariant check 하려고 없앴다가 다시 추가 (이거랑 B0_inv 선언할 때 수정해야됨)
             nn.Linear(lastconv_output_channels, num_classes),
         )
 
@@ -213,10 +222,10 @@ class EfficientNet(nn.Module):
                 if m.weight is not None:
                     nn.init.ones_(m.weight)
                     nn.init.zeros_(m.bias)
-            # elif isinstance(m, nn.Linear):
-            #     init_range = 1.0 / math.sqrt(m.out_features)
-            #     nn.init.uniform_(m.weight, -init_range, init_range)
-            #     nn.init.zeros_(m.bias)
+            elif isinstance(m, nn.Linear):
+                init_range = 1.0 / math.sqrt(m.out_features)
+                nn.init.uniform_(m.weight, -init_range, init_range)
+                nn.init.zeros_(m.bias)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)
@@ -232,7 +241,7 @@ class EfficientNet(nn.Module):
 
         return x
 
-    # @autocast()
+    @autocast()
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
 
@@ -250,7 +259,7 @@ def _efficientnet_conf(width_mult: float, depth_mult: float, **kwargs: Any) -> L
     ]
     return inverted_residual_setting
 
-
+# 변경 내용 없음: norm_layer, invariant, eps, activation은 **kwargs로 들어감
 def _efficientnet_model(
     arch: str,
     inverted_residual_setting: List[MBConvConfig],
@@ -268,17 +277,19 @@ def _efficientnet_model(
     return model
 
 # JS
-def efficientnet_b0_inv(pretrained: bool = False, progress: bool = True, eps = 1e-5, **kwargs: Any) -> EfficientNet:
+def efficientnet_b0_inv(pretrained: bool = False, progress: bool = True, eps = 1e-5, activation_layer = nn.ReLU, **kwargs: Any) -> EfficientNet:
     """
     EfficientNet B0 with invariace and ghost BatchNorm
 
     Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-        progress (bool): If True, displays a progress bar of the download to stderr
+        eps (float): epsilon in BatchNorm
+
     """
+    # JS 0.2
     inverted_residual_setting = _efficientnet_conf(width_mult=1.0, depth_mult=1.0, **kwargs)
     return _efficientnet_model("efficientnet_b0", inverted_residual_setting, 0.2, pretrained, progress, 
-                                norm_layer=partial(GBN, eps=eps), invariant=True, eps=eps, **kwargs)  # 이게 왜 되는거지?? GBN이 function이 아니라 class인데? trick인가?
+                                norm_layer=partial(GBN, eps=eps), invariant=True, eps=eps, activation_layer=activation_layer, **kwargs)  
+                                # 이게 왜 되는거지?? GBN이 function이 아니라 class인데? trick인가?
 
 
 def efficientnet_b0(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> EfficientNet:

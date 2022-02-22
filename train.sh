@@ -1,5 +1,88 @@
 #!/bin/bash
 
+############################## 220222 ###########################
+# GCP
+for i in 0
+do
+	CUDA_VISIBLE_DEVICES=0,1 python direction.0.0.2.py \
+					--GCP \
+					--dataset imagenet \
+					--num_workers 12 \
+					--num_sample $i \
+					--epochs 90 \
+					--epoch_step 30 60 80 \
+					--batch_size 256 \
+					--lr 0.1 \
+					--weight_decay 0.0001 \
+					--momentum 0.9 \
+					--net_type efficientnet_b0_inv \
+					--save_model \
+					--seed 0 1 2 \
+					--warm_up_epoch 0 \
+					--save_dir './logs_inv/'
+done
+
+# GCP
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python direction.0.0.2.py \
+# 					--GCP \
+# 					--dataset imagenet \
+# 					--num_workers 16 \
+# 					--num_sample $i \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--lr 0.1 \
+# 					--weight_decay 0.0001 \
+# 					--momentum 0.9 \
+# 					--net_type efficientnet_b0_inv \
+# 					--save_model \
+# 					--seed 0 1 2 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_inv/'
+# done
+
+############################## 220221 ###########################
+# GCP
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python direction.0.0.2.py \
+# 					--GCP \
+# 					--dataset imagenet \
+# 					--num_workers 16 \
+# 					--num_sample $i \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--lr 0.1 \
+# 					--weight_decay 0.0001 \
+# 					--momentum 0.9 \
+# 					--net_type efficientnet_b0_inv \
+# 					--save_model \
+# 					--seed 0 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_trash/'
+# done
+
+############################## 220220 ###########################
+# GCP
+# CUDA_VISIBLE_DEVICES=0 python invariant_test_v2.py \
+# 				--GCP \
+# 				--amp \
+# 				--dataset imagenet \
+# 				--epochs 2 \
+# 				--batch_size 128 \
+# 				--weight_decay1 0.0002 \
+# 				--lr1 0.1 \
+# 				--alpha_sqaure 100 \
+# 				--momentum 0.9 \
+# 				--net_type efficientnet_b0_inv \
+# 				--save_model \
+# 				--seed 0 \
+# 				--warm_up_epoch 0 \
+# 				--save_dir './logs_trash_invariant_test/'
+
 ############################## 220218 ###########################
 # ICML2
 # CUDA_VISIBLE_DEVICES=0 python invariant_test.py \
@@ -21,26 +104,26 @@
 
 
 # GCP
-for i in 0
-do
-	CUDA_VISIBLE_DEVICES=0 python direction.0.0.2.py \
-					--GCP \
-					--eps 1e-05 \
-					--dataset cifar10 \
-					--num_workers 2 \
-					--num_sample $i \
-					--epochs 300 \
-					--epoch_step 150 225 \
-					--batch_size 128 \
-					--lr 0.1 \
-					--weight_decay 0.0001 \
-					--momentum 0.9 \
-					--net_type efficientnet_b0_inv \
-					--save_model \
-					--seed 0 \
-					--warm_up_epoch 0 \
-					--save_dir './logs_trash/'
-done
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=0 python direction.0.0.2.py \
+# 					--GCP \
+# 					--eps 1e-05 \
+# 					--dataset cifar10 \
+# 					--num_workers 2 \
+# 					--num_sample $i \
+# 					--epochs 300 \
+# 					--epoch_step 150 225 \
+# 					--batch_size 128 \
+# 					--lr 0.1 \
+# 					--weight_decay 0.0001 \
+# 					--momentum 0.9 \
+# 					--net_type efficientnet_b0_inv \
+# 					--save_model \
+# 					--seed 0 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_trash/'
+# done
 
 ############################## 220214 ###########################
 # ICML

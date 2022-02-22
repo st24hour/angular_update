@@ -8,11 +8,7 @@ import torch
 # torch.backends.cudnn.deterministic = True    # for compare
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
-
-import torchvision
-import torchvision.transforms as transforms
 
 import os
 import argparse
@@ -37,11 +33,6 @@ import active_util
 import pdb
 import copy
 
-
-
-        
-
-
 # Training
 def train(logger, train_loader, model1, model2, criterion, optimizer1, optimizer2, epoch, num_iter_for_update):
     '''
@@ -55,8 +46,8 @@ def train(logger, train_loader, model1, model2, criterion, optimizer1, optimizer
     top11 = AverageMeter()
     top12 = AverageMeter()
 
-    model1.train()
-    model2.train()
+    model1.eval()
+    model2.eval()
     end = time.time()
 
     if args.amp:
@@ -67,9 +58,6 @@ def train(logger, train_loader, model1, model2, criterion, optimizer1, optimizer
     
     for i, (inputs, targets) in enumerate(train_loader):
         inputs, targets = inputs, targets.cuda()
-
-        # linear learning rate warm-up
-        # lr_warm_up(optimizer, epoch, i, len(train_loader), logger)
 
         # compute output
         if args.amp:
@@ -277,19 +265,6 @@ class AverageMeter(object):
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
-
-
-def lr_warm_up(optimizer, epoch, i, len_iter, logger):
-    # if args.lr > 0.1 and epoch < args.warm_up_epoch: # 0,1,2,3,4
-    if args.lr > 0.1 and epoch < args.warm_up_epoch: # 0,1,2,3,4
-        for param_group in optimizer.param_groups:
-            lr = args.lr*(len_iter*epoch+i)/(len_iter*args.warm_up_epoch)
-            param_group['lr'] = lr
-            logger.info(param_group['lr'])
-            # print(param_group)
-    elif epoch == args.warm_up_epoch:
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = args.lr
 
 
 def adjust_learning_rate(optimizer, epoch):

@@ -1,24 +1,89 @@
 #!/bin/bash
 
-############################## 220127 ###########################
-# 8gpu-ICML1
+############################## 220222 ###########################
+# GCP
 for i in 0
 do
-	CUDA_VISIBLE_DEVICES=3 python direction.0.0.2.py \
-					--dataset cifar100 \
+	CUDA_VISIBLE_DEVICES=6,7 python direction.0.0.2.py \
+					--GCP \
+					--dataset imagenet \
+					--num_workers 12 \
 					--num_sample $i \
-					--epochs 300 \
-					--epoch_step 150 225 \
-					--batch_size 128 \
-					--lr 0.8 \
+					--epochs 90 \
+					--epoch_step 30 60 80 \
+					--batch_size 256 \
+					--lr 0.1 \
 					--weight_decay 0.0008 \
 					--momentum 0.9 \
-					--net_type densenetBC100_GBN_invariant \
+					--net_type efficientnet_b0_inv \
 					--save_model \
-					--seed 0 1 \
+					--seed 0 1 2 \
 					--warm_up_epoch 0 \
 					--save_dir './logs_inv/'
 done
+
+# GCP
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=3 python direction.0.0.2.py \
+# 					--GCP \
+# 					--dataset imagenet \
+# 					--num_workers 12 \
+# 					--num_sample $i \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--lr 0.1 \
+# 					--weight_decay 0.0008 \
+# 					--momentum 0.9 \
+# 					--net_type efficientnet_b0_inv \
+# 					--save_model \
+# 					--seed 0 1 2 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_inv/'
+# done
+
+############################## 220221 ###########################
+# GCP
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=3,4 python direction.0.0.2.py \
+# 					--GCP \
+# 					--dataset imagenet \
+# 					--num_workers 16 \
+# 					--num_sample $i \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 512 \
+# 					--lr 0.1 \
+# 					--weight_decay 0.0001 \
+# 					--momentum 0.9 \
+# 					--net_type efficientnet_b0_inv \
+# 					--save_model \
+# 					--seed 0 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_trash/'
+# done
+
+############################## 220127 ###########################
+# 8gpu-ICML1
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=3 python direction.0.0.2.py \
+# 					--dataset cifar100 \
+# 					--num_sample $i \
+# 					--epochs 300 \
+# 					--epoch_step 150 225 \
+# 					--batch_size 128 \
+# 					--lr 0.8 \
+# 					--weight_decay 0.0008 \
+# 					--momentum 0.9 \
+# 					--net_type densenetBC100_GBN_invariant \
+# 					--save_model \
+# 					--seed 0 1 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_inv/'
+# done
 
 # # group4
 # for i in 50000

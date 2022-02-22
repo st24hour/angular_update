@@ -1,26 +1,92 @@
 #!/bin/bash
-############################## 220214 ###########################
-# ICML
+
+############################## 220222 ###########################
+# GCP
 for i in 0
 do
-	CUDA_VISIBLE_DEVICES=4,5,6,7 python direction.0.0.2.py \
+	CUDA_VISIBLE_DEVICES=8,9 python direction.0.0.2.py \
+					--GCP \
 					--dataset imagenet \
-					--num_workers 40 \
+					--num_workers 12 \
 					--num_sample $i \
-					--alpha_sqaure 100 \
-					--amp \
 					--epochs 90 \
 					--epoch_step 30 60 80 \
 					--batch_size 256 \
 					--lr 0.1 \
-					--weight_decay 0.0001 \
+					--weight_decay 0.0016 \
 					--momentum 0.9 \
 					--net_type efficientnet_b0_inv \
 					--save_model \
-					--seed 11111 \
+					--seed 0 1 2 \
 					--warm_up_epoch 0 \
-					--save_dir './logs_trash/'
+					--save_dir './logs_inv/'
 done
+
+# GCP
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5 python direction.0.0.2.py \
+# 					--GCP \
+# 					--dataset imagenet \
+# 					--num_workers 12 \
+# 					--num_sample $i \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--lr 0.1 \
+# 					--weight_decay 0.0001 \
+# 					--momentum 0.9 \
+# 					--net_type efficientnet_b0_inv \
+# 					--save_model \
+# 					--seed 0 1 2 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_inv/'
+# done
+
+############################## 220221 ###########################
+# GCP
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=5,6 python direction.0.0.2.py \
+# 					--GCP \
+# 					--dataset imagenet \
+# 					--num_workers 64 \
+# 					--num_sample $i \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 512 \
+# 					--lr 0.1 \
+# 					--weight_decay 0.0001 \
+# 					--momentum 0.9 \
+# 					--net_type efficientnet_b0_inv \
+# 					--save_model \
+# 					--seed 0 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_trash/'
+# done
+
+############################## 220214 ###########################
+# ICML
+# for i in 0
+# do
+# 	CUDA_VISIBLE_DEVICES=4,5,6,7 python direction.0.0.2.py \
+# 					--dataset imagenet \
+# 					--num_workers 40 \
+# 					--num_sample $i \
+# 					--alpha_sqaure 100 \
+# 					--amp \
+# 					--epochs 90 \
+# 					--epoch_step 30 60 80 \
+# 					--batch_size 256 \
+# 					--lr 0.1 \
+# 					--weight_decay 0.0001 \
+# 					--momentum 0.9 \
+# 					--net_type efficientnet_b0_inv \
+# 					--save_model \
+# 					--seed 11111 \
+# 					--warm_up_epoch 0 \
+# 					--save_dir './logs_trash/'
+# done
 
 ############################## 220127 ###########################
 # 8gpu-ICML1
