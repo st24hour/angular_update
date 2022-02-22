@@ -126,6 +126,7 @@ class EfficientNet(nn.Module):
             invariant: bool = False,    # JS
             eps: float = 1e-05,         # JS
             activation_layer: Optional[Callable[..., nn.Module]] = None, # JS
+            effnet_default_init: bool = True, # JS - True면 efficientnet의 원래 initialization을 따름
             **kwargs: Any
     ) -> None:
         """
@@ -223,9 +224,10 @@ class EfficientNet(nn.Module):
                     nn.init.ones_(m.weight)
                     nn.init.zeros_(m.bias)
             elif isinstance(m, nn.Linear):
-                init_range = 1.0 / math.sqrt(m.out_features)
-                nn.init.uniform_(m.weight, -init_range, init_range)
-                nn.init.zeros_(m.bias)
+                if effnet_default_init:
+                    init_range = 1.0 / math.sqrt(m.out_features)
+                    nn.init.uniform_(m.weight, -init_range, init_range)
+                    nn.init.zeros_(m.bias)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)
