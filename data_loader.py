@@ -79,10 +79,10 @@ def getTINYIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/tiny-imagenet
 
     if train:
         if sampler is not None:
-            train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=False, \
+            train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=True, \
                                 sampler=sampler, num_workers=num_workers, drop_last=drop_last)
         else:
-            train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=False, \
+            train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, pin_memory=True, \
                                 shuffle=shuffle, num_workers=num_workers, drop_last=drop_last)
 
 
@@ -105,6 +105,12 @@ def getIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/ILSVRC2012/', tra
     ds = []
     traindir = os.path.join(data_root, 'train')
     valdir = os.path.join(data_root, 'val')
+
+    sampler = kwargs.setdefault('sampler', None)
+    shuffle = kwargs.setdefault('shuffle', True)
+    num_workers = kwargs.setdefault('num_workers', 32)
+    drop_last = kwargs.setdefault('drop_last', True)
+
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
@@ -117,20 +123,20 @@ def getIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/ILSVRC2012/', tra
             normalize,
         ]))
 
-    num_workers = kwargs.setdefault('num_workers', 32)
-    drop_last = kwargs.setdefault('drop_last', True)
     # if args.distributed:
     #     train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
     # else:
     # train_sampler = None
 
     if train:
-        train_loader = torch.utils.data.DataLoader(
-            train_dataset, batch_size=batch_size, shuffle=True,
-            num_workers=num_workers, pin_memory=True, drop_last=drop_last)
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, pin_memory=True, \
+                            sampler=sampler, num_workers=num_workers, drop_last=drop_last)
+    else:
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, pin_memory=True, \
+                                shuffle=shuffle, num_workers=num_workers, drop_last=drop_last)
         ds.append(train_loader)
     print(train_dataset)
-    # exit()
+
     if val:
         val_loader = torch.utils.data.DataLoader(
             datasets.ImageFolder(valdir, transforms.Compose([
