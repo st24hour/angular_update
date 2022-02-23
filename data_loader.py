@@ -129,10 +129,11 @@ def getIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/ILSVRC2012/', tra
     # train_sampler = None
 
     if train:
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, pin_memory=True, \
-                            sampler=sampler, num_workers=num_workers, drop_last=drop_last)
-    else:
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, pin_memory=True, \
+        if sampler is not None:
+            train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, pin_memory=True, \
+                                sampler=sampler, num_workers=num_workers, drop_last=drop_last)
+        else:
+            train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, pin_memory=True, \
                                 shuffle=shuffle, num_workers=num_workers, drop_last=drop_last)
         ds.append(train_loader)
     print(train_dataset)
