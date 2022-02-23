@@ -17,7 +17,7 @@ from .gbn import GBN
 from .gbn import GBN_invariant
 from torch.cuda.amp import autocast
 
-__all__ = ["EfficientNet", "efficientnet_b0_inv", "efficientnet_b0", "efficientnet_b1", "efficientnet_b2", "efficientnet_b3",
+__all__ = ["EfficientNet", "efficientnet_b0_inv", "efficientnet_b4_inv", "efficientnet_b7_inv", "efficientnet_b0", "efficientnet_b1", "efficientnet_b2", "efficientnet_b3",
            "efficientnet_b4", "efficientnet_b5", "efficientnet_b6", "efficientnet_b7"]
 
 
@@ -293,6 +293,30 @@ def efficientnet_b0_inv(pretrained: bool = False, progress: bool = True, eps = 1
                                 norm_layer=partial(GBN, eps=eps), invariant=True, eps=eps, activation_layer=activation_layer, **kwargs)  
                                 # 이게 왜 되는거지?? GBN이 function이 아니라 class인데? trick인가?
 
+# JS
+def efficientnet_b4_inv(pretrained: bool = False, progress: bool = True, eps = 1e-5, activation_layer = nn.ReLU, **kwargs: Any) -> EfficientNet:
+    """
+    Constructs a EfficientNet B4 architecture from
+
+    Args:
+        eps (float): epsilon in BatchNorm
+    """
+    inverted_residual_setting = _efficientnet_conf(width_mult=1.4, depth_mult=1.8, **kwargs)
+    return _efficientnet_model("efficientnet_b4", inverted_residual_setting, 0.4, pretrained, progress, 
+                                norm_layer=partial(GBN, eps=eps), invariant=True, eps=eps, activation_layer=activation_layer, **kwargs)
+
+# JS
+def efficientnet_b7_inv(pretrained: bool = False, progress: bool = True, eps = 1e-5, activation_layer = nn.ReLU, **kwargs: Any) -> EfficientNet:
+    """
+    Constructs a EfficientNet B7 architecture from
+
+    Args:
+        eps (float): epsilon in BatchNorm
+    """
+    inverted_residual_setting = _efficientnet_conf(width_mult=2.0, depth_mult=3.1, **kwargs)
+    return _efficientnet_model("efficientnet_b7", inverted_residual_setting, 0.5, pretrained, progress,
+                               norm_layer=partial(nn.BatchNorm2d, eps=0.001, momentum=0.01), 
+                               invariant=True, eps=eps, activation_layer=activation_layer, **kwargs)
 
 def efficientnet_b0(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> EfficientNet:
     """
@@ -399,3 +423,4 @@ def efficientnet_b7(pretrained: bool = False, progress: bool = True, **kwargs: A
     inverted_residual_setting = _efficientnet_conf(width_mult=2.0, depth_mult=3.1, **kwargs)
     return _efficientnet_model("efficientnet_b7", inverted_residual_setting, 0.5, pretrained, progress,
                                norm_layer=partial(nn.BatchNorm2d, eps=0.001, momentum=0.01), **kwargs)
+
