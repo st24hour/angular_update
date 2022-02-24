@@ -359,14 +359,15 @@ def main(args, seed):
         args.num_classes = 10
         len_dataset = 5000
 
-    if args.dataset == "imagenet" and args.batch_size >= 1024:
-        num_iter_for_update = args.batch_size / 1024
-    elif 'resnet' in args.net_type and 'cifar' in args.dataset and args.batch_size > 16384:
-        num_iter_for_update = args.batch_size / 16384
-    elif 'densenet' in args.net_type and 'cifar' in args.dataset and args.batch_size > 8192:
-        num_iter_for_update = args.batch_size / 8192
-    else:
-        num_iter_for_update = 1
+    num_iter_for_update = 1
+    # if args.dataset == "imagenet" and args.batch_size >= 1024:
+    #     num_iter_for_update = args.batch_size / 1024
+    # elif 'resnet' in args.net_type and 'cifar' in args.dataset and args.batch_size > 16384:
+    #     num_iter_for_update = args.batch_size / 16384
+    # elif 'densenet' in args.net_type and 'cifar' in args.dataset and args.batch_size > 8192:
+    #     num_iter_for_update = args.batch_size / 8192
+    # else:
+    #     num_iter_for_update = 1
     loader_batch_size = int(args.batch_size/num_iter_for_update)
 
     if args.load_dir:
