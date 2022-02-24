@@ -134,7 +134,7 @@ def train(logger, train_loader, model, criterion, optimizer, epoch, num_iter_for
         elif 'efficient' in args.net_type:
             conv_parameters, bn_parameters = [], []
             for name, module in model.named_modules():
-                if isinstance(module, (nn.Conv2d)):
+                if isinstance(module, (nn.Conv2d)) and not ('fc' in name):
                     conv_parameters.append(name)
                 elif isinstance(module, (nn.BatchNorm2d, nn.GroupNorm)):
                     bn_parameters.append(name)
