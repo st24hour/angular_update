@@ -459,7 +459,7 @@ def main(args, seed):
             elif 'efficient' in args.net_type:
                 conv_parameters, bn_parameters = [], []
                 for name, module in model.named_modules():
-                    if isinstance(module, (nn.Conv2d)):
+                    if isinstance(module, (nn.Conv2d)) and not ('fc' in name):
                         conv_parameters.append(name)
                     elif isinstance(module, (nn.BatchNorm2d, nn.GroupNorm)):
                         bn_parameters.append(name)
@@ -521,8 +521,10 @@ def main(args, seed):
         logger.info('Degree from w0: {}\t Degree from w0_conv: {}'.format(w0_theta, w0_conv_theta))
         logger.info('Degree from w_t-1: {}\t Degree from w_t-1_conv: {}'.format(wt_theta, wt_conv_theta))
         if args.tensorboard:
-            log_value('Degree from w0', w0_theta, epoch)
-            log_value('Degree from t-1', wt_theta, epoch)
+            log_value('w0_theta', w0_theta, epoch)
+            log_value('wt_theta', wt_theta, epoch)
+            log_value('w0_conv_theta', w0_conv_theta, epoch)
+            log_value('wt_conv_theta', wt_conv_theta, epoch)
 
         prev_l2_norm = wt_l2_norm
         prev_conv_l2_norm = conv_l2_norm
