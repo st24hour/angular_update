@@ -398,7 +398,7 @@ def main(args, seed):
     model = model_to_call(num_classes=args.num_classes, zero_init_residual=args.zero_init_residual, amp=args.amp, 
                             eps=args.eps, effnet_default_init=False)
     model = model.to(device)
-    torchsummary.summary(model, (3, 256, 256),device='cuda')
+    # torchsummary.summary(model, (3, 256, 256),device='cuda')
     model = torch.nn.DataParallel(model)
     # print(model)
     # exit()
