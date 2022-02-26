@@ -678,7 +678,7 @@ if __name__ == '__main__':
     else: # KAIST
         if args.dataset == "imagenet":
             args.dataroot = '/home/user/dataset/ILSVRC2012'
-        elif args.datset == "tinyimagenet":
+        elif args.dataset == "tinyimagenet":
             args.dataroot = '/home/user/dataset/tiny-imagenet-200'
         else: # CIFAR-10, CIFAR-100, STL-10
             args.dataroot = '/home/user/dataset'

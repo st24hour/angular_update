@@ -1357,7 +1357,7 @@ def resnet18_GBN(num_classes, std_weight=1., zero_init_residual=False):
 def resnet18_GBN_invariant(num_classes, std_weight=1., zero_init_residual=False):
     return ResNet_GBN_invariant(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual)
 
-def resnet18_GBN_invariant2(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
+def resnet18_GBN_invariant2(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05, **kwargs):
     return ResNet_GBN_invariant2(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
                                 amp=amp, eps=eps)
 
@@ -1405,9 +1405,9 @@ def resnet50_GBN_invariant2_noBN(num_classes, std_weight=1., zero_init_residual=
     return ResNet_GBN_imagenet_invariant2_noBN(Bottleneck_GBN_noBN, [3,4,6,3], std_weight=std_weight, num_classes=num_classes, \
                             zero_init_residual=zero_init_residual, amp=amp, eps=eps)
                                 
-def test():
-    net = ResNet18()
-    y = net(Variable(torch.randn(1,3,32,32)))
-    print(y.size())
+# def test():
+#     net = ResNet18()
+#     y = net(Variable(torch.randn(1,3,32,32)))
+#     print(y.size())
 
 # test()
