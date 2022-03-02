@@ -1361,6 +1361,10 @@ def resnet18_GBN_invariant2(num_classes, std_weight=1., zero_init_residual=False
     return ResNet_GBN_invariant2(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
                                 amp=amp, eps=eps)
 
+def resnet18_GBN_inv_stl(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
+    return ResNet_GBN_inv_stl(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
+                                amp=amp, eps=eps)
+                                
 def resnet18_GBN_invariant2_bn_fix(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
     return ResNet_GBN_invariant2_bn_fix(BasicBlock_GBN_bn_fix, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, \
                                 zero_init_residual=zero_init_residual, amp=amp, eps=eps)

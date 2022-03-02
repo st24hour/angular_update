@@ -35,25 +35,32 @@ import utils
 import torchsummary
 
 # Training
-def train(logger, train_loader, model, criterion, optimizer, epoch, num_iter_for_update):
+def train(logger, train_loader, model, criterion, optimizer, epoch, update_freq, lr_schedule, conv_parameters):
     batch_time = AverageMeter()
     losses = AverageMeter()
     top1 = AverageMeter()
+    iters_per_epoch = len(train_loader) // update_freq
 
     model.train()
-    end = time.time()
-
     if args.amp:
         scaler = GradScaler()
     # optimizer.zero_grad()
     for param in model.parameters():
         param.grad = None
-        
+
+    end = time.time()        
     for i, (inputs, targets) in enumerate(train_loader):
         inputs, targets = inputs, targets.cuda()
 
-        # linear learning rate warm-up
-        lr_warm_up(optimizer, epoch, i, len(train_loader), logger)
+        optim_iter = i // update_freq
+        it = iters_per_epoch * epoch + optim_iter  # global training iteration
+        for k, param_group in enumerate(optimizer.param_groups):
+            param_group['lr'] = lr_schedule[it]
+            # momentum 출력!
+            # if i > 0:
+            #     for p in param_group['params']:
+            #         if p.requires_grad:
+            #             print((optimizer.state[p])['momentum_buffer'].size())
 
         # compute output
         if args.amp:
@@ -67,21 +74,21 @@ def train(logger, train_loader, model, criterion, optimizer, epoch, num_iter_for
         # measure accuracy and record loss
         acc_temp, loss_temp = 0, 0
         acc1 = accuracy(outputs.data, targets, topk=(1,))[0]
-        if num_iter_for_update == 1 :
+        if update_freq == 1 :
             losses.update(loss.data, inputs.size(0))    
             top1.update(acc1, inputs.size(0))
-        elif (i+1) % num_iter_for_update != 0:
+        elif (i+1) % update_freq != 0:
             acc_temp += accuracy(outputs.data, targets, topk=(1,))[0]
             loss_temp += loss.data
         else:
             acc1 = accuracy(outputs.data, targets, topk=(1,))[0]
-            losses.update((loss.data+loss_temp)/num_iter_for_update, inputs.size(0)*num_iter_for_update)
-            top1.update((acc1+acc_temp)/num_iter_for_update, inputs.size(0)*num_iter_for_update)
+            losses.update((loss.data+loss_temp)/update_freq, inputs.size(0)*update_freq)
+            top1.update((acc1+acc_temp)/update_freq, inputs.size(0)*update_freq)
 
         # compute gradient and do SGD step
         if args.amp:    # for backward compatibility 
-            scaler.scale(loss / num_iter_for_update).backward()
-            if (i+1) % num_iter_for_update == 0 :
+            scaler.scale(loss / update_freq).backward()
+            if (i+1) % update_freq == 0 :
                 if args.max_grad_norm is not None:
                     scaler.unscale_(optimizer)
                     nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
@@ -92,8 +99,8 @@ def train(logger, train_loader, model, criterion, optimizer, epoch, num_iter_for
                     for param in model.parameters():
                         param.grad = None
         else:
-            (loss / num_iter_for_update).backward()
-            if (i+1) % num_iter_for_update == 0 :
+            (loss / update_freq).backward()
+            if (i+1) % update_freq == 0 :
                 if args.max_grad_norm is not None:
                     nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)    
                 optimizer.step()
@@ -110,58 +117,55 @@ def train(logger, train_loader, model, criterion, optimizer, epoch, num_iter_for
             logger.info('Epoch: [{0}][{1}/{2}]\t'
                         'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                        'acc@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
+                        'acc@1 {top1.val:.3f} ({top1.avg:.3f})\t'
+                        'lr {lr:.4f}'.format(
                             epoch, i, len(train_loader), batch_time=batch_time,
-                            loss=losses, top1=top1))
+                            loss=losses, top1=top1, lr=lr_schedule[it]))
 
     # log to TensorBoard
-    if args.tensorboard:
-        log_value('train_loss', losses.avg, epoch)
-        log_value('train_acc', top1.avg, epoch)
-        # log_value('momentum_buffer', momentum_buffer, epoch)
-
-        # compute norm
-        model.eval()      
-        wt_l2_norm, grad_l2_norm, conv_l2_norm, conv_grad_l2_norm = 0,0,0,0
-        wt_weight, wt_conv_weight = [],[]
-        if 'resnet' in args.net_type:
-            conv_parameters = ['conv', 'shortcut.0']
-        elif 'densenet' in args.net_type:
-            conv_parameters = ['conv']
-        elif 'efficient' in args.net_type:
-            conv_parameters, bn_parameters = [], []
-            for name, module in model.named_modules():
-                if isinstance(module, (nn.Conv2d)) and not ('fc' in name):
-                    conv_parameters.append(name)
-                elif isinstance(module, (nn.BatchNorm2d, nn.GroupNorm)):
-                    bn_parameters.append(name)
-
-        with torch.no_grad():
-            for name, param in model.named_parameters():
-                if not 'linear' in name and not 'classifier' in name:   # except for fully connected layer
-                    wt_l2_norm = wt_l2_norm + (param.data.norm(2).item()**2)
-                    grad_l2_norm = grad_l2_norm + param.grad.data.norm(2).item()**2
-                    wt_weight.append(param.view(-1).data)
+    model.eval()      
+    wt_l2_norm, grad_l2_norm, conv_l2_norm, conv_grad_l2_norm = 0,0,0,0
+    wt_weight, wt_conv_weight = [],[]
+    with torch.no_grad():
+        for name, param in model.named_parameters():
+            if not 'linear' in name and not 'classifier' in name:   # except for fully connected layer
+                norm_square = param.data.norm(2).item()**2
+                grad_norm_square = param.grad.data.norm(2).item()**2
+                weight_vector = param.view(-1).data
+                # all weight 
+                wt_l2_norm = wt_l2_norm + norm_square
+                grad_l2_norm = grad_l2_norm + grad_norm_square
+                wt_weight.append(weight_vector)
+                # conv weight
                 if any(conv_parameter in name for conv_parameter in conv_parameters):
-                    conv_l2_norm = conv_l2_norm + param.data.norm(2).item()**2
-                    conv_grad_l2_norm = conv_grad_l2_norm + param.grad.data.norm(2).item()**2
-                    wt_conv_weight.append(param.view(-1).data)
-            wt_weight = torch.cat(wt_weight,0)
-            wt_conv_weight = torch.cat(wt_conv_weight,0)
-            wt_l2_norm = wt_l2_norm**(1./2)
-            grad_l2_norm = grad_l2_norm**(1./2)
-            conv_l2_norm = conv_l2_norm**(1./2)
-            conv_grad_l2_norm = conv_grad_l2_norm**(1./2)
+                    conv_l2_norm = conv_l2_norm + norm_square
+                    conv_grad_l2_norm = conv_grad_l2_norm + grad_norm_square
+                    wt_conv_weight.append(weight_vector)
+        wt_weight = torch.cat(wt_weight,0)
+        wt_conv_weight = torch.cat(wt_conv_weight,0)
+        effecitve_lr = lr_schedule[(epoch+1)*iters_per_epoch-1]/wt_l2_norm              # LR / norm^2
+        effecitve_conv_lr = lr_schedule[(epoch+1)*iters_per_epoch-1]/conv_l2_norm       # LR / conv_norm^2
+        wt_l2_norm = wt_l2_norm**(1./2)
+        grad_l2_norm = grad_l2_norm**(1./2)
+        conv_l2_norm = conv_l2_norm**(1./2)
+        conv_grad_l2_norm = conv_grad_l2_norm**(1./2)
 
-        logger.info('wt_l2_norm: {}\t grad_l2_norm: {}\t'.format(wt_l2_norm, grad_l2_norm))
-        logger.info('conv_l2_norm: {}\t conv_grad_l2_norm: {}\t'.format(conv_l2_norm, conv_grad_l2_norm))
+    logger.info('wt_l2_norm: {}\t grad_l2_norm: {}\t'.format(wt_l2_norm, grad_l2_norm))
+    logger.info('conv_l2_norm: {}\t conv_grad_l2_norm: {}\t'.format(conv_l2_norm, conv_grad_l2_norm))
 
-        log_value('wt_l2_norm', wt_l2_norm, epoch+1)
-        log_value('grad_l2_norm', grad_l2_norm, epoch)
-        log_value('conv_l2_norm', conv_l2_norm, epoch+1)
-        log_value('conv_grad_l2_norm', conv_grad_l2_norm, epoch)
+    log_value('train_loss', losses.avg, epoch)
+    log_value('train_acc', top1.avg, epoch)
+    log_value('learning_rate', lr_schedule[(epoch+1)*iters_per_epoch-1], epoch)
+    log_value('weight_decay', args.weight_decay, epoch)
+    # log_value('momentum_buffer', momentum_buffer, epoch)
+    log_value('wt_l2_norm', wt_l2_norm, epoch+1)
+    log_value('grad_l2_norm', grad_l2_norm, epoch)
+    log_value('conv_l2_norm', conv_l2_norm, epoch+1)
+    log_value('conv_grad_l2_norm', conv_grad_l2_norm, epoch)
+    log_value('effecitve_lr', effecitve_lr, epoch)
+    log_value('effecitve__conv_lr', effecitve_conv_lr, epoch)        
 
-        return [wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, (100.-top1.avg).item()]
+    return [wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, effecitve_lr, effecitve_conv_lr, (100.-top1.avg).item()]
           
 
 def test(logger, test_loader, model, criterion, epoch):
@@ -245,23 +249,10 @@ class AverageMeter(object):
         self.count += n
         self.avg = self.sum / self.count
 
-
-def lr_warm_up(optimizer, epoch, i, len_iter, logger):
-    # if args.lr > 0.1 and epoch < args.warm_up_epoch: # 0,1,2,3,4
-    if epoch < args.warm_up_epoch: # 0,1,2,3,4
-        for param_group in optimizer.param_groups:
-            lr = args.lr*(len_iter*epoch+i)/(len_iter*args.warm_up_epoch)
-            param_group['lr'] = lr
-            logger.info(param_group['lr'])
-            # print(param_group)
-    elif epoch == args.warm_up_epoch:
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = args.lr
-
 def adjust_learning_rate(optimizer, epoch):
     """Sets the learning rate to the initial LR decayed by 10 after 150 and 225 epochs"""
 
-    if epoch in args.epoch_step:
+    if epoch in args.decay_epoch:
         for param_group in optimizer.param_groups:
             param_group['lr'] *= args.lr_decay
             lr = param_group['lr']
@@ -356,16 +347,16 @@ def main(args, seed):
         args.num_classes = 10
         len_dataset = 5000
 
-    num_iter_for_update = 1
+    update_freq = 1
     # if args.dataset == "imagenet" and args.batch_size >= 1024:
-    #     num_iter_for_update = args.batch_size / 1024
+    #     update_freq = args.batch_size / 1024
     # elif 'resnet' in args.net_type and 'cifar' in args.dataset and args.batch_size > 16384:
-    #     num_iter_for_update = args.batch_size / 16384
+    #     update_freq = args.batch_size / 16384
     # elif 'densenet' in args.net_type and 'cifar' in args.dataset and args.batch_size > 8192:
-    #     num_iter_for_update = args.batch_size / 8192
+    #     update_freq = args.batch_size / 8192
     # else:
-    #     num_iter_for_update = 1
-    loader_batch_size = int(args.batch_size/num_iter_for_update)
+    #     update_freq = 1
+    loader_batch_size = int(args.batch_size/update_freq)
 
     if args.load_dir:
         if os.path.isdir(args.load_dir):
@@ -385,7 +376,6 @@ def main(args, seed):
     else:
         train_loader, test_loader = data_loader.getDataSet(args.dataset, loader_batch_size, args.dataroot, \
                 drop_last=args.drop_last, num_workers=args.num_workers)
-    # classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
     # Model
     print('==> Building model..')
@@ -414,78 +404,78 @@ def main(args, seed):
 
     optimizer = optim.SGD(parameters, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=args.nesterov)
     # optimizer = optim.AdamW(model.parameters(), weight_decay=weight_decay)
-    # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.epoch_step, gamma=0.1)
-    lr_schedule = utils.cosine_scheduler(args.lr, args.lr_end, args.epochs,
-        len(train_loader) // args.update_freq, warmup_epochs=args.warmup_epochs, start_warmup_value=args.lr_start)
+    # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.decay_epoch, gamma=0.1)
+    lr_schedule = utils.scheduler(args.lr, args.epochs,
+        len(train_loader) // update_freq, warmup_epochs=args.warmup_epochs, start_warmup_value=1e-3, type = args.schedule_type,
+        final_value = args.lr_end, decay_epoch=args.decay_epoch)
 
-    # episode code copy
+    # for save data
     best_acc = 0
     train_errors, val_errors = [],[]
     wt_norms, conv_norms = [],[]
     wt_thetas, wt_conv_thetas = [],[]
     w0_thetas, w0_conv_thetas = [],[]
-    save_data = {'train_errors':train_errors, 'val_errors':val_errors, \
-                'wt_norms':wt_norms, 'conv_norms':conv_norms, \
-                'wt_thetas':wt_thetas, 'wt_conv_thetas':wt_conv_thetas, 'w0_thetas':w0_thetas, 'w0_conv_thetas':w0_conv_thetas}
+    effective_lrs, effective_conv_lrs = [],[]
+    save_data = {'train_errors':train_errors, 'val_errors':val_errors, 
+                'wt_norms':wt_norms, 'conv_norms':conv_norms, 
+                'wt_thetas':wt_thetas, 'wt_conv_thetas':wt_conv_thetas, 'w0_thetas':w0_thetas, 'w0_conv_thetas':w0_conv_thetas,
+                'effective_lrs':effective_lrs, 'effective_conv_lrs':effective_conv_lrs}
+
+    # for calculate angular update
+    w0_l2_norm, w0_conv_l2_norm = 0,0
+    w0_weight, w0_conv_weight = [],[]
+
+    conv_parameters, bn_parameters = [], []
+    for name, module in model.named_modules():
+        if isinstance(module, (nn.Conv2d)) and not ('fc' in name):
+            conv_parameters.append(name)
+        elif isinstance(module, (nn.BatchNorm2d, nn.GroupNorm)):
+            bn_parameters.append(name)
+
+    with torch.no_grad():
+        for name, param in model.named_parameters():
+            # make the network scale invariant
+            if 'linear' in name or 'classifier' in name:
+            # if 'linear' in name:
+                if 'inv' in args.net_type:  # invariant
+                    param.requires_grad = False
+            else:
+                if args.alpha_sqaure is not None:   # It should be None for ICML experiments 
+                    param.mul_(np.sqrt(args.alpha_sqaure))
+                norm_square = param.data.norm(2).item()**2
+                weight_vector = param.view(-1).data
+                w0_l2_norm = w0_l2_norm + norm_square    # without linear layer
+                w0_weight.append(weight_vector)
+
+                if any(conv_parameter in name for conv_parameter in conv_parameters):
+                    # print(name)
+                    w0_conv_l2_norm = w0_conv_l2_norm + norm_square
+                    w0_conv_weight.append(weight_vector)
+            
+        w0_weight = torch.cat(w0_weight,0)
+        w0_conv_weight = torch.cat(w0_conv_weight,0)
+        w0_l2_norm = w0_l2_norm**(1./2)
+        w0_conv_l2_norm = w0_conv_l2_norm**(1./2)
+        prev_l2_norm = w0_l2_norm
+        prev_conv_l2_norm = w0_conv_l2_norm
+        prev_weight = w0_weight
+        prev_conv_weight = w0_conv_weight
+        wt_norms.append(w0_l2_norm)
+        conv_norms.append(w0_conv_l2_norm)
+
+    logger.info('wt_l2_norm {}\tconv_l2_norm {}'.format(w0_l2_norm, w0_conv_l2_norm))
+    if args.tensorboard:
+        log_value('wt_l2_norm', w0_l2_norm, 0)
+        log_value('conv_l2_norm', w0_conv_l2_norm, 0)
+
+    ######## epoch start ########
     for epoch in range(args.start_epoch, args.epochs):
         # scheduler.step(epoch)
-        adjust_learning_rate(optimizer, epoch)
-
-        # save norm of w0 
-        if epoch == 0:
-            w0_l2_norm, w0_conv_l2_norm = 0,0
-            w0_weight, w0_conv_weight = [],[]
-            if 'resnet' in args.net_type:
-                conv_parameters = ['conv', 'shortcut.0']
-                bn_parameters = ['bn', 'shortcut.1']
-            elif 'densenet' in args.net_type:
-                conv_parameters = ['conv']
-                bn_parameters = ['bn']
-            elif 'efficient' in args.net_type:
-                conv_parameters, bn_parameters = [], []
-                for name, module in model.named_modules():
-                    if isinstance(module, (nn.Conv2d)) and not ('fc' in name):
-                        conv_parameters.append(name)
-                    elif isinstance(module, (nn.BatchNorm2d, nn.GroupNorm)):
-                        bn_parameters.append(name)
-
-            with torch.no_grad():
-                for name, param in model.named_parameters():
-                    # make the network scale invariant
-                    if 'linear' in name or 'classifier' in name:
-                    # if 'linear' in name:
-                        if 'inv' in args.net_type:  # invariant
-                            param.requires_grad = False
-                    else:
-                        if args.alpha_sqaure is not None:   # It should be None for ICML experiments 
-                            param.mul_(np.sqrt(args.alpha_sqaure))
-                        w0_l2_norm = w0_l2_norm + (param.data.norm(2).item()**2)    # without linear layer
-                        w0_weight.append(param.view(-1).data)
-
-                    if any(conv_parameter in name for conv_parameter in conv_parameters):
-                        # print(name)
-                        w0_conv_l2_norm = w0_conv_l2_norm + param.data.norm(2).item()**2
-                        w0_conv_weight.append(param.view(-1).data)
-                    
-                w0_weight = torch.cat(w0_weight,0)
-                w0_conv_weight = torch.cat(w0_conv_weight,0)
-                w0_l2_norm = w0_l2_norm**(1./2)
-                w0_conv_l2_norm = w0_conv_l2_norm**(1./2)
-                prev_l2_norm = w0_l2_norm
-                prev_conv_l2_norm = w0_conv_l2_norm
-                prev_weight = w0_weight
-                prev_conv_weight = w0_conv_weight
-                wt_norms.append(w0_l2_norm)
-                conv_norms.append(w0_conv_l2_norm)
-
-            logger.info('wt_l2_norm {}\tconv_l2_norm {}'.format(w0_l2_norm, w0_conv_l2_norm))
-            if args.tensorboard:
-                log_value('wt_l2_norm', w0_l2_norm, epoch)
-                log_value('conv_l2_norm', w0_conv_l2_norm, epoch)
+        # adjust_learning_rate(optimizer, epoch)
 
         # train for one epoch
-        wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, train_error = train(
-            logger, train_loader, model, criterion, optimizer, epoch, num_iter_for_update)
+        wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, effective_lr, effective_conv_lr, train_error = train(
+            logger, train_loader, model, criterion, optimizer, epoch, update_freq, lr_schedule, conv_parameters)
         
         # calculate angular update in the degree
         w0_theta = torch.acos(torch.dot(w0_weight, wt_weight)/(w0_l2_norm*wt_l2_norm)).item()*(360./(2.*np.pi))
@@ -499,6 +489,8 @@ def main(args, seed):
         train_errors.append(train_error)
         wt_norms.append(wt_l2_norm)
         conv_norms.append(conv_l2_norm)
+        effective_lrs.append(effective_lr)
+        effective_conv_lrs.append(effective_conv_lr)
         wt_thetas.append(wt_theta)
         wt_conv_thetas.append(wt_conv_theta)
         w0_thetas.append(w0_theta)
@@ -539,10 +531,7 @@ def main(args, seed):
     args.lr = lr
     args.weight_decay = weight_decay
     
-    # save weight distribution
-    # norms = active_util.save_weight_distribution3(args, save_dir, model, episode_i, norms, \
-    #     include_bn=False, save=args.save_fig, xlim=args.xlim, ylim=args.ylim)
-    
+    # deactivate logger
     logger.removeHandler(fileHandler)
     logger.removeHandler(streamHandler)
     logging.shutdown()
@@ -570,9 +559,13 @@ if __name__ == '__main__':
                         help='input batch size')
     parser.add_argument('--lr', '--learning-rate', default=0.1, type=float, 
                         help='initial learning rate')
-    parser.add_argument('--epoch_step', type=int, nargs='+', default=[150,225], 
+    parser.add_argument('--lr_end', default=0.0001, type=float, 
+                        help='initial learning rate')      
+    parser.add_argument('--schedule_type', default='step', type=str,
+                        help='learning rate scheduling type')                            
+    parser.add_argument('--decay_epoch', type=int, nargs='+', default=[150,225], 
                         help='Learning Rate Decay Steps')
-    parser.add_argument('--warm_up_epoch', type=int, default=0, 
+    parser.add_argument('--warmup_epochs', type=int, default=0, 
                         help='Warm up epochs')
     parser.add_argument('--momentum', default=0.9, type=float, 
                         help='momentum')
@@ -606,8 +599,6 @@ if __name__ == '__main__':
                         help='test frequency (default: 10)')
     parser.add_argument('--no-augment', dest='augment', action='store_false', 
                         help='whether to use standard augmentation (default: True)')
-    # parser.add_argument('--save_dir', type=str, default='/home/user/jusung/IITP5/large_batch/logs/',
-    #                     help='Directory name to save the checkpoints')
     parser.add_argument('--save_dir', type=str, default='logs/',
                         help='Directory name to save the checkpoints')    
     parser.add_argument('--save_model', default=False, action='store_true',
@@ -648,7 +639,8 @@ if __name__ == '__main__':
 
     if args.GCP:
         if args.dataset == "imagenet":
-            args.dataroot = '/home/user/data/lgaivision-imagenet1k-us'
+            # args.dataroot = '/home/user/data/lgaivision-imagenet1k-us'
+            args.dataroot = '/home/user/code/jusung/ramdisk/lgaivision-imagenet1k-us'
         else:
             args.dataroot = '/home/user/code/jusung/dataset' # CIFAR10 is saved to shared_storage/code/juseung/dataset
     else: # KAIST
@@ -674,9 +666,9 @@ if __name__ == '__main__':
 
     # FTP location (where we save logs)
     copy_dir = '{}{}/{}/num_data_{}/batch_{}/\
-WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}_'.format(
+WD_{}_lr{}_{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}_'.format(
         args.save_dir, args.dataset, args.net_type, args.num_sample, args.batch_size, \
-        args.weight_decay, args.lr, args.warm_up_epoch, args.filter_bn_bias, \
+        args.weight_decay, args.lr, args.schedule_type, args.warmup_epochs, args.filter_bn_bias, \
         args.momentum, args.nesterov, args.epochs, args.amp, \
         str(args.seed).replace("[", "").replace("]", "").replace(",", "_"))
     if args.save_model:
@@ -703,6 +695,7 @@ WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}
     seeds_accs = [] 
     train_errors_list, val_errors_list = [],[]
     norms_list, conv_norms_list = [], []
+    effective_lr_list, effective_conv_lr_list = [], []
     wt_thetas_list, wt_conv_thetas_list = [],[]
     w0_thetas_list, w0_conv_thetas_list = [],[]
     for seed in args.seed:
@@ -713,6 +706,8 @@ WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}
         val_errors_list.append(save_data['val_errors'])
         norms_list.append(save_data['wt_norms'])
         conv_norms_list.append(save_data['conv_norms'])
+        effective_lr_list.append(save_data['effective_lrs'])
+        effective_conv_lr_list.append(save_data['effective_conv_lrs'])
         wt_thetas_list.append(save_data['wt_thetas'])
         wt_conv_thetas_list.append(save_data['wt_conv_thetas'])
         w0_thetas_list.append(save_data['w0_thetas'])
@@ -730,37 +725,13 @@ WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}
     avg_acc_file.to_excel(args.save_dir+'/avg_acc_file.xlsx')
     os.makedirs(args.save_dir+'/'+str(average_acc).replace("[", "").replace("]", "").replace(",", " "))
 
-    # calculate effective lr
-    lr_step = args.epoch_step
-    lr_step.append(args.epochs) # 150 225 300
-
-    if args.warm_up_epoch > 0:
-        lr_list = [args.lr*((i+1)/args.warm_up_epoch) for i in range(args.warm_up_epoch)]
-    else:
-        lr_list = []
-    prev_step = lr_step[0] # 150
-    lr_list = lr_list+[args.lr]*(prev_step-args.warm_up_epoch)
-    for i, step in enumerate(lr_step[1:]):  # (0, 225), (1, 300)
-        if step > prev_step:
-            lr_list=lr_list+[args.lr*0.1**(i+1)]*(step-prev_step)   # 225-150
-            prev_step = step
-    lr_list = lr_list[:args.epochs]        
-
-    # print(lr_list)
-    effective_lr_list, effective_conv_lr_list = [], []
-    for i in range(len(args.seed)-2):
-        effective_lr_list.append(np.array(lr_list)/(np.array(norms_list)[i][1:])**2) 
-        effective_conv_lr_list.append(np.array(lr_list)/(np.array(conv_norms_list)[i][1:])**2)         
-
-    # print(effective_lr_list)
-
     # save effective lr log
     average_effective_lr = np.average(effective_lr_list,0)
     std_effective_lr = np.std(effective_lr_list,0)
     effective_lr_list.append(average_effective_lr)
     effective_lr_list.append(std_effective_lr)
 
-    # save effective lr log
+    # save effective conv lr log
     average_effective_conv_lr = np.average(effective_conv_lr_list,0)
     std_effective_conv_lr = np.std(effective_conv_lr_list,0)
     effective_conv_lr_list.append(average_effective_conv_lr)
@@ -827,21 +798,10 @@ WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}
     avg_norm_file.to_excel(args.save_dir+'/direction_file_{}_{}_{}_{}.xlsx'.format(
         args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
     
-    # save figure of norms
+    # save figure
     # plt.errorbar(np.arange(args.epochs+1), average_norm, std_norm)
     sns.set_theme(style="darkgrid")
-    # sns.set()
-    '''
-    ax.set_title(title='Norm of convolution weights', xlabel='epochs', ylabel='L2 norm')
-    fig1 = plt.figure(1)
-    plt.plot(np.arange(args.epochs), average_train_error, linewidth=5, alpha=0.2)
-    plt.xlabel('epochs', fontsize=18)
-    plt.ylabel('training error %', fontsize=18)
-    plt.gcf().subplots_adjust(bottom=0.15)
-    plt.gcf().subplots_adjust(left=0.10)
-    plt.fill_between(np.arange(args.epochs), average_train_error-std_train_error, average_train_error+std_train_error, linewidth=5, alpha=0.2)
-    fig.savefig('{}/average_norm.pdf'.format(args.save_dir), dpi=300, bbox_inches = "tight")
-    '''
+
     fig, ax = plt.subplots()
     image, = ax.plot(np.arange(args.epochs), average_train_error, linewidth=3, alpha=0.9)
     ax.fill_between(np.arange(args.epochs), average_train_error-std_train_error, average_train_error+std_train_error, alpha=0.2)
@@ -923,6 +883,17 @@ WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}
     plt.gcf().subplots_adjust(bottom=0.15)
     plt.gcf().subplots_adjust(left=0.18)
     fig.savefig('{}/effective_lr.pdf'.format(args.save_dir), dpi=300)
+
+    # effective conv_lr
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), average_effective_conv_lr, linewidth=3, alpha=0.9)
+    ax.fill_between(np.arange(args.epochs), 
+            average_effective_conv_lr-std_effective_conv_lr, average_effective_conv_lr+std_effective_conv_lr, alpha=0.2)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('effecive learning rate', fontsize=18)    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.18)
+    fig.savefig('{}/effective_conv_lr.pdf'.format(args.save_dir), dpi=300)
 
     # weight polar plot
     # plt.clf()

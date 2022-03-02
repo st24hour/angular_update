@@ -6,6 +6,18 @@ import torch
 from torchvision import datasets, transforms
 from torch.utils.data import Dataset, DataLoader
 import os
+from PIL import Image
+from simplejpeg import decode_jpeg
+
+# fast data encoder (hyungwook shon)
+def image_loader(path: str) -> Image.Image:
+    try:
+        with open(path, 'rb') as fp:
+            image = decode_jpeg(fp.read(), colorspace='RGB')
+        image = Image.fromarray(image)
+    except:
+        image = Image.open(path).convert('RGB')
+    return image
 
 # STL10 is automatically saved similar to cifar10
 def getSTL10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, val=True, **kwargs):
@@ -121,7 +133,7 @@ def getIMAGENET(batch_size, data_root='/home/user/ssd1/dataset/ILSVRC2012/', tra
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             normalize,
-        ]))
+        ]),loader=image_loader)
 
     # if args.distributed:
     #     train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)

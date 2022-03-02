@@ -69,34 +69,17 @@ def setup_axes(fig, rect, theta, radius):
 
 def save_figures(save_data, save_dir, args, seed):
     sns.set_theme(style="darkgrid")
-
-    # calculate effective lr
-    lr_step = args.epoch_step
-    lr_step.append(args.epochs) # 150 225 300
-
-    if args.warm_up_epoch > 0:
-        lr_list = [args.lr*((i+1)/args.warm_up_epoch) for i in range(args.warm_up_epoch)]
-    else:
-        lr_list = []
-    prev_step = lr_step[0] # 150
-    lr_list = lr_list+[args.lr]*(prev_step-args.warm_up_epoch)
-    for i, step in enumerate(lr_step[1:]):  # (0, 225), (1, 300)
-        if step > prev_step:
-            lr_list=lr_list+[args.lr*0.1**(i+1)]*(step-prev_step)   # 225-150
-            prev_step = step
-    lr_list = lr_list[:args.epochs]        
-
+ 
     train_errors = save_data['train_errors']
     val_errors = save_data['val_errors']
     wt_norms = save_data['wt_norms']
     conv_norms = save_data['conv_norms']
+    effective_lr = save_data['effective_lrs']
+    effective_conv_lr = save_data['effective_conv_lrs']
     wt_thetas = save_data['wt_thetas']
     wt_conv_thetas = save_data['wt_conv_thetas']
     w0_thetas = save_data['w0_thetas']
     w0_conv_thetas = save_data['w0_conv_thetas']
-
-    effective_lr = np.array(lr_list)/((np.array(wt_norms[1:]))**2)
-    effective_conv_lr = np.array(lr_list)/((np.array(conv_norms[1:]))**2)
 
     name= ['train_error']+['val_error']+['norm']+['conv_norm']+['wt_theta']+['wt_conv_theta']+\
         ['w0_theta']+['w0_conv_theta']+['effective_lr']+['effective_conv_lr']
@@ -232,3 +215,43 @@ def save_figures(save_data, save_dir, args, seed):
     # plt.tight_layout()
     fig.set_size_inches(3.75,3.75)
     fig.savefig('{}/weight_polar.pdf'.format(save_dir), dpi=300) 
+
+
+# incorporated to scheduler below
+def cosine_scheduler(base_value, final_value, epochs, niter_per_ep, warmup_epochs=0, start_warmup_value=0):
+    warmup_schedule = np.array([])
+    warmup_iters = warmup_epochs * niter_per_ep
+    if warmup_epochs > 0:
+        warmup_schedule = np.linspace(start_warmup_value, base_value, warmup_iters)
+
+    iters = np.arange(epochs * niter_per_ep - warmup_iters)
+    schedule = final_value + 0.5 * (base_value - final_value) * (1 + np.cos(np.pi * iters / len(iters)))
+
+    schedule = np.concatenate((warmup_schedule, schedule))
+    assert len(schedule) == epochs * niter_per_ep
+    return schedule
+
+
+def scheduler(base_value, epochs, niter_per_ep, warmup_epochs=0, start_warmup_value=0, type='step', **kwargs):
+    warmup_schedule = np.array([])
+    warmup_iters = warmup_epochs * niter_per_ep
+    if warmup_epochs > 0:
+        warmup_schedule = np.linspace(start_warmup_value, base_value, warmup_iters)
+
+    if type == 'step':
+        decay_epoch = kwargs.setdefault('decay_epoch', [150, 225])
+        lr_decay = kwargs.setdefault('lr_decay', 0.1) 
+
+        schedule = np.array([base_value] * (epochs-warmup_epochs)*niter_per_ep) # warmup 뺀 전체 iteration임
+        for nepoch in decay_epoch:
+            schedule[nepoch*niter_per_ep-warmup_iters:] = schedule[nepoch*niter_per_ep-warmup_iters:] * lr_decay
+
+    elif type == 'cosine':
+        final_value = kwargs.setdefault('final_value', 0)
+        iters = np.arange(epochs * niter_per_ep - warmup_iters)
+        schedule = final_value + 0.5 * (base_value - final_value) * (1 + np.cos(np.pi * iters / len(iters)))
+
+    schedule = np.concatenate((warmup_schedule, schedule))
+    assert len(schedule) == epochs * niter_per_ep
+    return schedule
+
