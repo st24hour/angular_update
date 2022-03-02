@@ -297,13 +297,12 @@ def add_weight_decay(model, weight_decay=1e-4, skip_list=()):
         # print('{}\t shape: {}'.format(name, param.shape))
         if not param.requires_grad:
             continue
-        if ('linear' in name or 'classifier' in name) and 'inv' in args.net_type: # 어차피 FC는 grad 없어서 위에서 걸러지긴 함
-            # do not give weight decay to linear layer
-            no_decay.append(param)
-        elif args.filter_bn_bias:
+
+        if args.filter_bn_bias:
             # do not give weight decay to BN and bias
             if len(param.shape) == 1 or name in skip_list:
                 no_decay.append(param)
+                print(name)
             else:
                 decay.append(param)
         else:
@@ -383,7 +382,7 @@ def main(args, seed):
 
     model_to_call = getattr(models, args.net_type)
     model = model_to_call(num_classes=args.num_classes, zero_init_residual=args.zero_init_residual, amp=args.amp, 
-                            eps=args.eps, effnet_default_init=False)
+                            eps=args.eps, effnet_default_init=True)
     model = model.to(device)
     # torchsummary.summary(model, (3, 256, 256),device='cuda')
     model = torch.nn.DataParallel(model)
@@ -666,9 +665,9 @@ if __name__ == '__main__':
 
     # FTP location (where we save logs)
     copy_dir = '{}{}/{}/num_data_{}/batch_{}/\
-WD_{}_lr{}_{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}_'.format(
+{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}_'.format(
         args.save_dir, args.dataset, args.net_type, args.num_sample, args.batch_size, \
-        args.weight_decay, args.lr, args.schedule_type, args.warmup_epochs, args.filter_bn_bias, \
+        args.schedule_type, args.weight_decay, args.lr, args.warmup_epochs, args.filter_bn_bias, \
         args.momentum, args.nesterov, args.epochs, args.amp, \
         str(args.seed).replace("[", "").replace("]", "").replace(",", "_"))
     if args.save_model:
