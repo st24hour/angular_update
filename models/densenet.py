@@ -428,7 +428,7 @@ def densenetBC100(num_classes):
 def densenetBC100_GBN(num_classes, zero_init_residual):
     return DenseNet_GBN(Bottleneck_GBN, [6,12,24,16], growth_rate=12, num_classes=num_classes, zero_init_residual=False)
 
-def densenetBC100_GBN_invariant(num_classes, zero_init_residual, amp=True, eps=1e-05):
+def densenetBC100_GBN_invariant(num_classes, zero_init_residual, amp=True, eps=1e-05, **kwargs):
     return DenseNet_GBN_invariant(Bottleneck_GBN, [6,12,24,16], growth_rate=12, num_classes=num_classes, zero_init_residual=False, amp=amp, eps=eps)
 
 def densenetBC100_GBN_bn_fix(num_classes, zero_init_residual, amp=True, eps=1e-05):

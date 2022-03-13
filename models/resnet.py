@@ -1334,7 +1334,7 @@ class ResNet_GBN_inv_stl(nn.Module):
             return y
 
         
-def resnet18(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05, momentum=0.1):
+def resnet18(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05, momentum=0.1, **kwargs):
     return ResNet(BasicBlock, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
                                 amp=amp, eps=eps, momentum=momentum)    # momentum is not implemented
 

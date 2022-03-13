@@ -1,7 +1,7 @@
 '''
 ******  Weight Direction Experiment  ******
-0.0.2 will be deprecated
-
+parallel with direction.0.0.3.py
+calculate angular update every iteration
 '''
 from __future__ import print_function
 # from __future__ import division
@@ -35,13 +35,17 @@ import utils
 import torchsummary
 
 # Training
-def train(logger, train_loader, model, criterion, optimizer, epoch, update_freq, lr_schedule, conv_parameters):
+def train(logger, train_loader, model, criterion, optimizer, epoch, update_freq, lr_schedule, conv_parameters, 
+            prev_weight_iter, prev_conv_weight_iter, prev_l2_norm_iter, prev_conv_l2_norm_iter):
     batch_time = AverageMeter()
     losses = AverageMeter()
     top1 = AverageMeter()
     iters_per_epoch = len(train_loader) // update_freq
+    # epoch 마다 angular update는 그대로 계산해야 되니까 iteration용은 따로 _iter 붙은 변수로 설정 -> 어차피 train function 밖에서 계산해서 필요 없음
 
-    model.train()
+    wt_theta_iter_one_epoch, wt_conv_theta_iter_one_epoch = [],[] # for one epoch average
+
+    # model.train()
     if args.amp:
         scaler = GradScaler()
     # optimizer.zero_grad()
@@ -50,6 +54,7 @@ def train(logger, train_loader, model, criterion, optimizer, epoch, update_freq,
 
     end = time.time()        
     for i, (inputs, targets) in enumerate(train_loader):
+        model.train()
         inputs, targets = inputs, targets.cuda()
 
         optim_iter = i // update_freq
@@ -122,6 +127,49 @@ def train(logger, train_loader, model, criterion, optimizer, epoch, update_freq,
                             epoch, i, len(train_loader), batch_time=batch_time,
                             loss=losses, top1=top1, lr=lr_schedule[it]))
 
+        if (it+1) % args.angle_freq == 0:
+            model.eval()      
+            wt_l2_norm, conv_l2_norm = 0,0
+            wt_weight, wt_conv_weight = [],[]
+            with torch.no_grad():
+                for name, param in model.named_parameters():
+                    if not 'linear' in name and not 'classifier' in name:   # except for fully connected layer
+                        norm_square = param.data.norm(2).item()**2
+                        weight_vector = param.view(-1).data
+                        # all weight 
+                        wt_l2_norm = wt_l2_norm + norm_square
+                        wt_weight.append(weight_vector)
+                        # conv weight
+                        if any(conv_parameter in name for conv_parameter in conv_parameters):
+                            conv_l2_norm = conv_l2_norm + norm_square
+                            wt_conv_weight.append(weight_vector)
+                wt_weight = torch.cat(wt_weight,0)
+                wt_conv_weight = torch.cat(wt_conv_weight,0)
+                wt_l2_norm = wt_l2_norm**(1./2)
+                conv_l2_norm = conv_l2_norm**(1./2)
+
+                # calculate angular update in the degree
+                wt_cos_theta_iter = torch.clamp(torch.dot(prev_weight_iter, wt_weight)/(prev_l2_norm_iter*wt_l2_norm),-1,1) # clamp for stability
+                wt_theta_iter = (torch.acos(wt_cos_theta_iter)*(360./(2.*np.pi))).item()
+                
+                wt_conv_cos_theta_iter = torch.clamp(torch.dot(prev_conv_weight_iter, wt_conv_weight)/(prev_conv_l2_norm_iter*conv_l2_norm),-1,1) # clamp for stability
+                wt_conv_theta_iter = (torch.acos(wt_conv_cos_theta_iter)*(360./(2.*np.pi))).item()
+                
+                wt_theta_iter_one_epoch.append(wt_theta_iter)            # for one epoch average
+                wt_conv_theta_iter_one_epoch.append(wt_conv_theta_iter)  # for one epoch average
+
+                if args.tensorboard:
+                    log_value('wt_theta_iter', wt_theta_iter, it//args.angle_freq)
+                    log_value('wt_conv_theta_iter', wt_conv_theta_iter, it//args.angle_freq)
+
+                # angle_freq 마다 weight vector랑 norm 구함
+                prev_l2_norm_iter = wt_l2_norm
+                prev_conv_l2_norm_iter = conv_l2_norm
+                prev_weight_iter = wt_weight
+                prev_conv_weight_iter = wt_conv_weight
+                # 위에 4개를 return 한다음 다음 epoch에 넘겨주면 됨, save_theta_iter도 
+
+    # 한 epoch 마다 계산
     # log to TensorBoard
     model.eval()      
     wt_l2_norm, grad_l2_norm, conv_l2_norm, conv_grad_l2_norm = 0,0,0,0
@@ -163,10 +211,14 @@ def train(logger, train_loader, model, criterion, optimizer, epoch, update_freq,
     log_value('conv_l2_norm', conv_l2_norm, epoch+1)
     log_value('conv_grad_l2_norm', conv_grad_l2_norm, epoch)
     log_value('effecitve_lr', effecitve_lr, epoch)
-    log_value('effecitve__conv_lr', effecitve_conv_lr, epoch)        
+    log_value('effecitve__conv_lr', effecitve_conv_lr, epoch) # 중간에 오타 있는데 기존에 있는거랑 tensorboard에서 같이 보려고 안고침
+    log_value('wt_theta_iter_avg', torch.mean(torch.as_tensor(wt_theta_iter_one_epoch)), epoch)
+    log_value('wt_conv_theta_iter_avg', torch.mean(torch.as_tensor(wt_conv_theta_iter_one_epoch)), epoch)
 
-    return [wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, effecitve_lr, effecitve_conv_lr, (100.-top1.avg).item()]
-          
+    return [wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, 
+            prev_weight_iter, prev_conv_weight_iter, prev_l2_norm_iter, prev_conv_l2_norm_iter, 
+            wt_theta_iter_one_epoch, wt_conv_theta_iter_one_epoch,
+            effecitve_lr, effecitve_conv_lr, (100.-top1.avg).item()]
 
 def test(logger, test_loader, model, criterion, epoch):
     batch_time = AverageMeter()
@@ -414,10 +466,14 @@ def main(args, seed):
     wt_norms, conv_norms = [],[]
     wt_thetas, wt_conv_thetas = [],[]
     w0_thetas, w0_conv_thetas = [],[]
+    # 이거 이름 제대로 정하고 train 함수에서 ouput 하는 list 받아서 계속 concat 해야 됨
     effective_lrs, effective_conv_lrs = [],[]
+    wt_theta_iters, wt_conv_theta_iters = [],[] # angular_freq 마다 theta 기록
     save_data = {'train_errors':train_errors, 'val_errors':val_errors, 
                 'wt_norms':wt_norms, 'conv_norms':conv_norms, 
-                'wt_thetas':wt_thetas, 'wt_conv_thetas':wt_conv_thetas, 'w0_thetas':w0_thetas, 'w0_conv_thetas':w0_conv_thetas,
+                'wt_thetas':wt_thetas, 'wt_conv_thetas':wt_conv_thetas, 
+                'w0_thetas':w0_thetas, 'w0_conv_thetas':w0_conv_thetas,
+                'wt_theta_iters':wt_theta_iters, 'wt_conv_theta_iters':wt_conv_theta_iters,
                 'effective_lrs':effective_lrs, 'effective_conv_lrs':effective_conv_lrs}
 
     # for calculate angular update
@@ -431,6 +487,7 @@ def main(args, seed):
         elif isinstance(module, (nn.BatchNorm2d, nn.GroupNorm)):
             bn_parameters.append(name)
 
+    # before train
     with torch.no_grad():
         for name, param in model.named_parameters():
             # make the network scale invariant
@@ -455,10 +512,10 @@ def main(args, seed):
         w0_conv_weight = torch.cat(w0_conv_weight,0)
         w0_l2_norm = w0_l2_norm**(1./2)
         w0_conv_l2_norm = w0_conv_l2_norm**(1./2)
-        prev_l2_norm = w0_l2_norm
-        prev_conv_l2_norm = w0_conv_l2_norm
-        prev_weight = w0_weight
-        prev_conv_weight = w0_conv_weight
+        prev_l2_norm = prev_l2_norm_iter = w0_l2_norm
+        prev_conv_l2_norm = prev_conv_l2_norm_iter = w0_conv_l2_norm
+        prev_weight = prev_weight_iter = w0_weight
+        prev_conv_weight = prev_conv_weight_iter = w0_conv_weight
         wt_norms.append(w0_l2_norm)
         conv_norms.append(w0_conv_l2_norm)
 
@@ -473,8 +530,12 @@ def main(args, seed):
         # adjust_learning_rate(optimizer, epoch)
 
         # train for one epoch
-        wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, effective_lr, effective_conv_lr, train_error = train(
-            logger, train_loader, model, criterion, optimizer, epoch, update_freq, lr_schedule, conv_parameters)
+        wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, \
+        prev_weight_iter, prev_conv_weight_iter, prev_l2_norm_iter, prev_conv_l2_norm_iter, \
+        wt_theta_iter_one_epoch, wt_conv_theta_iter_one_epoch, \
+        effective_lr, effective_conv_lr, train_error \
+                = train(logger, train_loader, model, criterion, optimizer, epoch, update_freq, lr_schedule, conv_parameters, \
+                        prev_weight_iter, prev_conv_weight_iter, prev_l2_norm_iter, prev_conv_l2_norm_iter)
         
         # calculate angular update in the degree
         w0_theta = torch.acos(torch.dot(w0_weight, wt_weight)/(w0_l2_norm*wt_l2_norm)).item()*(360./(2.*np.pi))
@@ -493,7 +554,9 @@ def main(args, seed):
         wt_thetas.append(wt_theta)
         wt_conv_thetas.append(wt_conv_theta)
         w0_thetas.append(w0_theta)
-        w0_conv_thetas.append(w0_conv_theta)       
+        w0_conv_thetas.append(w0_conv_theta)
+        wt_theta_iters.extend(wt_theta_iter_one_epoch)
+        wt_conv_theta_iters.extend(wt_conv_theta_iter_one_epoch)
 
         logger.info('Degree from w0: {}\t Degree from w0_conv: {}'.format(w0_theta, w0_conv_theta))
         logger.info('Degree from w_t-1: {}\t Degree from w_t-1_conv: {}'.format(wt_theta, wt_conv_theta))
@@ -562,7 +625,7 @@ if __name__ == '__main__':
                         help='initial learning rate')      
     parser.add_argument('--schedule_type', default='step', type=str,
                         help='learning rate scheduling type')                            
-    parser.add_argument('--decay_epoch', type=int, nargs='+', default=[150,225], 
+    parser.add_argument('--decay_epoch', type=float, nargs='+', default=[150,225], 
                         help='Learning Rate Decay Steps')
     parser.add_argument('--warmup_epochs', type=int, default=0, 
                         help='Warm up epochs')
@@ -592,12 +655,12 @@ if __name__ == '__main__':
                         help='path to dataset')
     parser.add_argument('--GCP', default=False, action='store_true', 
                         help='run on GCP?')
-    parser.add_argument('--lamdisk', default=False, action='store_true', 
-                        help='data load from lamdisk')                        
     parser.add_argument('--print-freq', default=10, type=int,
                         help='print frequency (default: 10)')
     parser.add_argument('--test_freq', default=1, type=int,
                         help='test frequency (default: 10)')
+    parser.add_argument('--angle_freq', default=390, type=int,
+                        help='test frequency (default: 10)')                        
     parser.add_argument('--no-augment', dest='augment', action='store_false', 
                         help='whether to use standard augmentation (default: True)')
     parser.add_argument('--save_dir', type=str, default='logs/',
@@ -640,10 +703,8 @@ if __name__ == '__main__':
 
     if args.GCP:
         if args.dataset == "imagenet":
-            if args.lamdisk == True:
-                args.dataroot = '/home/user/code/jusung/ramdisk/lgaivision-imagenet1k-us'
-            else:
-                args.dataroot = '/home/user/data/lgaivision-imagenet1k-us'
+            # args.dataroot = '/home/user/data/lgaivision-imagenet1k-us'
+            args.dataroot = '/home/user/code/jusung/ramdisk/lgaivision-imagenet1k-us'
         else:
             args.dataroot = '/home/user/code/jusung/dataset' # CIFAR10 is saved to shared_storage/code/juseung/dataset
     else: # KAIST
@@ -659,20 +720,21 @@ if __name__ == '__main__':
         args.weight_decay = args.weight_decay/args.alpha_sqaure
         args.eps = args.eps*args.alpha_sqaure
     ####################################################################################################
-    os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+\
-        '/num_data_'+str(args.num_sample)+'/batch_'+str(args.batch_size), exist_ok=True)
+    os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample)+
+        '/batch_'+str(args.batch_size)+'_epoch_'+str(args.epochs), exist_ok=True)
     os.chmod(local_dir+args.save_dir, 0o777)
     os.chmod(local_dir+args.save_dir+args.dataset, 0o777)
     os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type, 0o777)
     os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample), 0o777)
-    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample)+'/batch_'+str(args.batch_size), 0o777)
+    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample)
+    +'/batch_'+str(args.batch_size)+'_epoch_'+str(args.epochs), 0o777)
 
     # FTP location (where we save logs)
-    copy_dir = '{}{}/{}/num_data_{}/batch_{}/\
-{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}_'.format(
-        args.save_dir, args.dataset, args.net_type, args.num_sample, args.batch_size, \
-        args.schedule_type, args.weight_decay, args.lr, args.warmup_epochs, args.filter_bn_bias, \
-        args.momentum, args.nesterov, args.epochs, args.amp, \
+    copy_dir = '{}{}/{}/num_data_{}/batch_{}_epoch_{}/\
+angle_freq_{}_{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_amp_{}_seed{}_'.format(
+        args.save_dir, args.dataset, args.net_type, args.num_sample, args.batch_size, args.epochs, \
+        args.angle_freq, args.schedule_type, args.weight_decay, args.lr, args.warmup_epochs, args.filter_bn_bias, \
+        args.momentum, args.nesterov, args.amp, \
         str(args.seed).replace("[", "").replace("]", "").replace(",", "_"))
     if args.save_model:
         copy_dir = copy_dir + 'save'
@@ -701,6 +763,7 @@ if __name__ == '__main__':
     effective_lr_list, effective_conv_lr_list = [], []
     wt_thetas_list, wt_conv_thetas_list = [],[]
     w0_thetas_list, w0_conv_thetas_list = [],[]
+    wt_theta_iters_list, wt_conv_theta_iters_list = [],[]
     for seed in args.seed:
         np.random.seed(seed)
         seeds_acc, save_data = main(args, seed)
@@ -715,6 +778,8 @@ if __name__ == '__main__':
         wt_conv_thetas_list.append(save_data['wt_conv_thetas'])
         w0_thetas_list.append(save_data['w0_thetas'])
         w0_conv_thetas_list.append(save_data['w0_conv_thetas'])
+        wt_theta_iters_list.append(save_data['wt_theta_iters'])
+        wt_conv_theta_iters_list.append(save_data['wt_conv_theta_iters'])
 
     # save accuracy log
     average_acc = np.average(seeds_accs,0)
@@ -780,13 +845,24 @@ if __name__ == '__main__':
     std_conv_theta0 = np.std(w0_conv_thetas_list,0)
     w0_conv_thetas_list.append(average_conv_theta0)
     w0_conv_thetas_list.append(std_conv_theta0)
+    # save conv_theta_iters log
+    average_wt_theta_iters = np.average(wt_theta_iters_list,0)
+    std_wt_theta_iters = np.std(wt_theta_iters_list,0)
+    wt_theta_iters_list.append(average_wt_theta_iters)
+    wt_theta_iters_list.append(std_wt_theta_iters)
+    # save conv_theta_iters log
+    average_wt_conv_theta_iters = np.average(wt_conv_theta_iters_list,0)
+    std_wt_conv_theta_iters = np.std(wt_conv_theta_iters_list,0)
+    wt_conv_theta_iters_list.append(average_wt_conv_theta_iters)
+    wt_conv_theta_iters_list.append(std_wt_conv_theta_iters)
 
     name= ['train_error']*len(train_errors_list)+['val_error']*len(val_errors_list)+\
         ['norm']*len(norms_list)+['conv_norm']*len(conv_norms_list)+\
         ['wt_theta']*len(wt_thetas_list)+['wt_conv_theta']*len(wt_conv_thetas_list)+\
         ['w0_theta']*len(w0_thetas_list)+['w0_conv_theta']*len(w0_conv_thetas_list)+\
         ['effective_lr']*len(effective_lr_list)+['effective_conv_lr']*len(effective_conv_lr_list)
-    excel_data = []
+    name2 = ['wt_theta_iter']*len(wt_theta_iters_list)+['wt_conv_theta_iter']*len(wt_conv_theta_iters_list)
+    excel_data, excel_data2 = [], []
     excel_data.extend(train_errors_list)
     excel_data.extend(val_errors_list)
     excel_data.extend(norms_list)
@@ -797,9 +873,14 @@ if __name__ == '__main__':
     excel_data.extend(w0_conv_thetas_list)
     excel_data.extend(effective_lr_list)
     excel_data.extend(effective_conv_lr_list)
-    avg_norm_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name, args.seed*10])  
+    excel_data2.extend(wt_theta_iters_list)
+    excel_data2.extend(wt_conv_theta_iters_list)
+    avg_norm_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name, args.seed*10])
     avg_norm_file.to_excel(args.save_dir+'/direction_file_{}_{}_{}_{}.xlsx'.format(
         args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
+    angle_iter_file = pd.DataFrame(excel_data2, columns=np.arange(args.epochs*(390//args.angle_freq)), index=[name2, args.seed*2])  
+    angle_iter_file.to_excel(args.save_dir+'/angle_file_{}_{}_{}_{}_{}.xlsx'.format(
+        args.epochs, args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
     
     # save figure
     # plt.errorbar(np.arange(args.epochs+1), average_norm, std_norm)
@@ -914,6 +995,28 @@ if __name__ == '__main__':
     # plt.tight_layout()
     fig.set_size_inches(3.75,3.75)
     fig.savefig('{}/weight_polar.pdf'.format(args.save_dir), dpi=300) 
+
+    # theta_iters
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs*(390//args.angle_freq)), average_wt_theta_iters, linewidth=3, alpha=0.9)
+    ax.fill_between(np.arange(args.epochs*(390//args.angle_freq)), 
+                    average_wt_theta_iters-std_wt_theta_iters, average_wt_theta_iters+std_wt_theta_iters, alpha=0.2)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('degree', fontsize=18)    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    fig.savefig('{}/theta_iter.pdf'.format(args.save_dir), dpi=300)
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs*(390//args.angle_freq)), average_wt_conv_theta_iters, linewidth=3, alpha=0.9)
+    ax.fill_between(np.arange(args.epochs*(390//args.angle_freq)), 
+                    average_wt_conv_theta_iters-std_wt_conv_theta_iters, average_wt_conv_theta_iters+std_wt_conv_theta_iters, alpha=0.2)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('degree', fontsize=18)    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    fig.savefig('{}/conv_theta_iter.pdf'.format(args.save_dir), dpi=300)
+
 
     if not args.GCP:
         try:
