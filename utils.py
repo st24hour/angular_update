@@ -232,7 +232,7 @@ def save_figures(save_data, save_dir, args, seed):
     ax.set_ylabel('degree', fontsize=18)    
     plt.gcf().subplots_adjust(bottom=0.15)
     plt.gcf().subplots_adjust(left=0.15)
-    plt.savefig('{}/theta_iter.pdf'.format(args.save_dir), dpi=300)
+    plt.savefig('{}/theta_iter.pdf'.format(save_dir), dpi=300)
     plt.cla()
     plt.close(fig)
 
@@ -243,7 +243,7 @@ def save_figures(save_data, save_dir, args, seed):
     ax.set_ylabel('degree', fontsize=18)    
     plt.gcf().subplots_adjust(bottom=0.15)
     plt.gcf().subplots_adjust(left=0.15)
-    plt.savefig('{}/conv_theta_iter.pdf'.format(args.save_dir), dpi=300)
+    plt.savefig('{}/conv_theta_iter.pdf'.format(save_dir), dpi=300)
     plt.cla()
     plt.close(fig)
 
