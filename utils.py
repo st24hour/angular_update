@@ -102,7 +102,7 @@ def save_figures(save_data, save_dir, args, seed):
     avg_norm_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name])
     avg_norm_file.to_excel(save_dir+'/direction_file_seed_{}_{}_{}_{}_{}.xlsx'.format(
                             seed, args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
-    angle_file = pd.DataFrame(excel_data2, columns=np.arange(args.epochs*(390//args.angle_freq)), index=[name2])
+    angle_file = pd.DataFrame(excel_data2, columns=np.arange(args.epochs*(50000//args.batch_size)//args.angle_freq), index=[name2])
     angle_file.to_excel(save_dir+'/angle_file_seed_{}_{}_{}_{}_{}_{}.xlsx'.format(
                             seed, args.epochs, args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
 
@@ -227,7 +227,7 @@ def save_figures(save_data, save_dir, args, seed):
 
     # theta_iters
     fig, ax = plt.subplots()
-    image, = ax.plot(np.arange(args.epochs*(390//args.angle_freq)), wt_theta_iters, linewidth=3, alpha=0.9)
+    image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), wt_theta_iters, linewidth=3, alpha=0.9)
     ax.set_xlabel('epochs', fontsize=18)
     ax.set_ylabel('degree', fontsize=18)    
     plt.gcf().subplots_adjust(bottom=0.15)
@@ -238,7 +238,7 @@ def save_figures(save_data, save_dir, args, seed):
 
     # conv_theta_iters
     fig, ax = plt.subplots()
-    image, = ax.plot(np.arange(args.epochs*(390//args.angle_freq)), wt_conv_theta_iters, linewidth=3, alpha=0.9)
+    image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), wt_conv_theta_iters, linewidth=3, alpha=0.9)
     ax.set_xlabel('epochs', fontsize=18)
     ax.set_ylabel('degree', fontsize=18)    
     plt.gcf().subplots_adjust(bottom=0.15)

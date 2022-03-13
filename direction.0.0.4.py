@@ -878,7 +878,8 @@ angle_freq_{}_{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_amp_
     avg_norm_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name, args.seed*10])
     avg_norm_file.to_excel(args.save_dir+'/direction_file_{}_{}_{}_{}.xlsx'.format(
         args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
-    angle_iter_file = pd.DataFrame(excel_data2, columns=np.arange(args.epochs*(390//args.angle_freq)), index=[name2, args.seed*2])  
+    angle_iter_file = pd.DataFrame(excel_data2, columns=np.arange(args.epochs*(50000//args.batch_size)//args.angle_freq), 
+        index=[name2, args.seed*2])  
     angle_iter_file.to_excel(args.save_dir+'/angle_file_{}_{}_{}_{}_{}.xlsx'.format(
         args.epochs, args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
     
@@ -998,8 +999,8 @@ angle_freq_{}_{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_amp_
 
     # theta_iters
     fig, ax = plt.subplots()
-    image, = ax.plot(np.arange(args.epochs*(390//args.angle_freq)), average_wt_theta_iters, linewidth=3, alpha=0.9)
-    ax.fill_between(np.arange(args.epochs*(390//args.angle_freq)), 
+    image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), average_wt_theta_iters, linewidth=3, alpha=0.9)
+    ax.fill_between(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), 
                     average_wt_theta_iters-std_wt_theta_iters, average_wt_theta_iters+std_wt_theta_iters, alpha=0.2)
     ax.set_xlabel('epochs', fontsize=18)
     ax.set_ylabel('degree', fontsize=18)    
@@ -1008,8 +1009,8 @@ angle_freq_{}_{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_amp_
     fig.savefig('{}/theta_iter.pdf'.format(args.save_dir), dpi=300)
 
     fig, ax = plt.subplots()
-    image, = ax.plot(np.arange(args.epochs*(390//args.angle_freq)), average_wt_conv_theta_iters, linewidth=3, alpha=0.9)
-    ax.fill_between(np.arange(args.epochs*(390//args.angle_freq)), 
+    image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), average_wt_conv_theta_iters, linewidth=3, alpha=0.9)
+    ax.fill_between(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), 
                     average_wt_conv_theta_iters-std_wt_conv_theta_iters, average_wt_conv_theta_iters+std_wt_conv_theta_iters, alpha=0.2)
     ax.set_xlabel('epochs', fontsize=18)
     ax.set_ylabel('degree', fontsize=18)    
