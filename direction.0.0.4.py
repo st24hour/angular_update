@@ -726,7 +726,7 @@ if __name__ == '__main__':
         args.weight_decay = args.weight_decay/args.alpha_sqaure
         args.eps = args.eps*args.alpha_sqaure
 
-    args.angle_freq = (len_dataset//args.batch_size) * (args.epochs//300)
+    args.angle_freq = int((len_dataset//args.batch_size) * (args.epochs/300))
     ####################################################################################################
     os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample)+
         '/batch_'+str(args.batch_size)+'_epoch_'+str(args.epochs), exist_ok=True)
