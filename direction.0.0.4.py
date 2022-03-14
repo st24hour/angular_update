@@ -715,10 +715,18 @@ if __name__ == '__main__':
         else: # CIFAR-10, CIFAR-100, STL-10
             args.dataroot = '/home/user/dataset'
 
+    # number of dataset 
+    if args.num_sample == 0:    # only cifar10
+        len_dataset = 50000
+    else:
+        len_dataset = args.num_sample
+
     if args.alpha_sqaure is not None:
         args.lr = args.lr*args.alpha_sqaure
         args.weight_decay = args.weight_decay/args.alpha_sqaure
         args.eps = args.eps*args.alpha_sqaure
+
+    args.angle_freq = (len_dataset//args.batch_size) * (args.epochs//300)
     ####################################################################################################
     os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample)+
         '/batch_'+str(args.batch_size)+'_epoch_'+str(args.epochs), exist_ok=True)
@@ -764,10 +772,7 @@ angle_freq_{}_{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_amp_
     wt_thetas_list, wt_conv_thetas_list = [],[]
     w0_thetas_list, w0_conv_thetas_list = [],[]
     wt_theta_iters_list, wt_conv_theta_iters_list = [],[]
-    if args.num_sample == 0:    # only cifar10
-        len_dataset = 50000
-    else:
-        len_dataset = args.num_sample
+
     for seed in args.seed:
         np.random.seed(seed)
         seeds_acc, save_data = main(args, seed)
