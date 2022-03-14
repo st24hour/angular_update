@@ -882,7 +882,7 @@ angle_freq_{}_{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_amp_
     avg_norm_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name, args.seed*10])
     avg_norm_file.to_excel(args.save_dir+'/direction_file_{}_{}_{}_{}.xlsx'.format(
         args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
-    angle_iter_file = pd.DataFrame(excel_data2, columns=np.arange(args.epochs*(50000//args.batch_size)//args.angle_freq), 
+    angle_iter_file = pd.DataFrame(excel_data2, columns=np.arange(args.epochs*(len_dataset//args.batch_size)//args.angle_freq), 
         index=[name2, args.seed*2])  
     angle_iter_file.to_excel(args.save_dir+'/angle_file_{}_{}_{}_{}_{}.xlsx'.format(
         args.epochs, args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
