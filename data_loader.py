@@ -219,6 +219,8 @@ def getCIFAR10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, 
     shuffle = kwargs.setdefault('shuffle', True)
     sampler = kwargs.setdefault('sampler', None)
     index = kwargs.pop('index', False)
+    if batch_size <= 1000:
+        test_batch_size = 1000
 
     if 'transform_train' in kwargs:
         transform_train = kwargs.pop('transform_train')
@@ -258,7 +260,7 @@ def getCIFAR10(batch_size, data_root='/tmp/public_dataset/pytorch', train=True, 
             datasets.CIFAR10(
                 root=data_root, train=False, download=True,
                 transform=transform_test),
-            batch_size=batch_size, pin_memory=True, shuffle=False, num_workers=num_workers, drop_last=False)
+            batch_size=test_batch_size, pin_memory=True, shuffle=False, num_workers=num_workers, drop_last=False)
         ds.append(test_loader)
     ds = ds[0] if len(ds) == 1 else ds
     return ds

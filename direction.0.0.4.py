@@ -600,7 +600,7 @@ def main(args, seed):
     del logger, fileHandler, streamHandler 
     if args.tensorboard: unconfigure()
 
-    utils.save_figures(save_data, save_dir, args, seed)
+    utils.save_figures_epoch(save_data, save_dir, args, seed)
     return [np.array(acc), save_data]
 
 
@@ -764,6 +764,10 @@ angle_freq_{}_{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_amp_
     wt_thetas_list, wt_conv_thetas_list = [],[]
     w0_thetas_list, w0_conv_thetas_list = [],[]
     wt_theta_iters_list, wt_conv_theta_iters_list = [],[]
+    if args.num_sample == 0:    # only cifar10
+        len_dataset = 50000
+    else:
+        len_dataset = args.num_sample
     for seed in args.seed:
         np.random.seed(seed)
         seeds_acc, save_data = main(args, seed)
@@ -999,8 +1003,8 @@ angle_freq_{}_{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_amp_
 
     # theta_iters
     fig, ax = plt.subplots()
-    image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), average_wt_theta_iters, linewidth=3, alpha=0.9)
-    ax.fill_between(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), 
+    image, = ax.plot(np.arange(args.epochs*((len_dataset//args.batch_size))//args.angle_freq), average_wt_theta_iters, linewidth=3, alpha=0.9)
+    ax.fill_between(np.arange(args.epochs*((len_dataset//args.batch_size))//args.angle_freq), 
                     average_wt_theta_iters-std_wt_theta_iters, average_wt_theta_iters+std_wt_theta_iters, alpha=0.2)
     ax.set_xlabel('epochs', fontsize=18)
     ax.set_ylabel('degree', fontsize=18)    
@@ -1009,8 +1013,8 @@ angle_freq_{}_{}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_amp_
     fig.savefig('{}/theta_iter.pdf'.format(args.save_dir), dpi=300)
 
     fig, ax = plt.subplots()
-    image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), average_wt_conv_theta_iters, linewidth=3, alpha=0.9)
-    ax.fill_between(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), 
+    image, = ax.plot(np.arange(args.epochs*((len_dataset//args.batch_size))//args.angle_freq), average_wt_conv_theta_iters, linewidth=3, alpha=0.9)
+    ax.fill_between(np.arange(args.epochs*((len_dataset//args.batch_size))//args.angle_freq), 
                     average_wt_conv_theta_iters-std_wt_conv_theta_iters, average_wt_conv_theta_iters+std_wt_conv_theta_iters, alpha=0.2)
     ax.set_xlabel('epochs', fontsize=18)
     ax.set_ylabel('degree', fontsize=18)    

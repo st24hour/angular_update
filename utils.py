@@ -80,6 +80,188 @@ def save_figures(save_data, save_dir, args, seed):
     wt_conv_thetas = save_data['wt_conv_thetas']
     w0_thetas = save_data['w0_thetas']
     w0_conv_thetas = save_data['w0_conv_thetas']
+    # wt_theta_iters = save_data['wt_theta_iters']
+    # wt_conv_theta_iters = save_data['wt_conv_theta_iters']
+
+    name= ['train_error']+['val_error']+['norm']+['conv_norm']+['wt_theta']+['wt_conv_theta']+\
+        ['w0_theta']+['w0_conv_theta']+['effective_lr']+['effective_conv_lr']
+    # name2 = ['wt_theta_iter']+['wt_conv_theta_iter']
+    excel_data,excel_data2 = [],[]
+    excel_data.extend([train_errors])
+    excel_data.extend([val_errors])
+    excel_data.extend([wt_norms])
+    excel_data.extend([conv_norms])
+    excel_data.extend([wt_thetas])
+    excel_data.extend([wt_conv_thetas])
+    excel_data.extend([w0_thetas])
+    excel_data.extend([w0_conv_thetas])
+    excel_data.extend([effective_lr])
+    excel_data.extend([effective_conv_lr])
+    # excel_data2.extend([wt_theta_iters])
+    # excel_data2.extend([wt_conv_theta_iters])
+    avg_norm_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name])
+    avg_norm_file.to_excel(save_dir+'/direction_file_seed_{}_{}_{}_{}_{}.xlsx'.format(
+                            seed, args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
+    # angle_file = pd.DataFrame(excel_data2, columns=np.arange(args.epochs*(50000//args.batch_size)//args.angle_freq), index=[name2])
+    # angle_file.to_excel(save_dir+'/angle_file_seed_{}_{}_{}_{}_{}_{}.xlsx'.format(
+    #                         seed, args.epochs, args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), train_errors, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('training error %', fontsize=18)
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.savefig('{}/training_error.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), val_errors, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('validation error %', fontsize=18)
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.savefig('{}/validation_error.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs+1), wt_norms, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('L2 norm', fontsize=18)
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.savefig('{}/L2_norm.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs+1), conv_norms, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('L2 norm', fontsize=18)
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.savefig('{}/L2_conv_norm.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), wt_thetas, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('degree', fontsize=18)    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.savefig('{}/theta.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), wt_conv_thetas, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('degree', fontsize=18)    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.savefig('{}/conv_theta.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), w0_thetas, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('degree', fontsize=18)    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.savefig('{}/theta_w0.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), w0_conv_thetas, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('degree', fontsize=18)    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.savefig('{}/conv_theta_w0.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    # effective lr
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), effective_lr, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('effecive learning rate', fontsize=18)    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.18)
+    plt.savefig('{}/effective_lr.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    # effective conv lr
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), effective_conv_lr, linewidth=3, alpha=0.9)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('effecive learning rate', fontsize=18)    
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.18)
+    plt.savefig('{}/effective_conv_lr.pdf'.format(save_dir), dpi=300)
+    plt.cla()
+    plt.close(fig)
+
+    # weight polar plot
+    # plt.clf()
+    # fig = plt.figure(1, figsize=(8, 4))
+    fig = plt.figure()
+    # fig = plt.subplots()
+    # fig.subplots_adjust(wspace=0.2, left=0.2, right=0.8)
+    
+    ax, aux_ax = setup_axes(fig, 111, theta=[0, 90], radius=[0, max(wt_norms)*1.1])
+    # generate the data to plot
+    theta=np.array([0])
+    theta=np.concatenate([theta,w0_thetas]) # in degrees
+    radius = wt_norms
+    aux_ax.plot(theta, radius)
+    # plt.tight_layout()
+    fig.set_size_inches(3.75,3.75)
+    fig.savefig('{}/weight_polar.pdf'.format(save_dir), dpi=300) 
+
+    # # theta_iters
+    # fig, ax = plt.subplots()
+    # image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), wt_theta_iters, linewidth=3, alpha=0.9)
+    # ax.set_xlabel('epochs', fontsize=18)
+    # ax.set_ylabel('degree', fontsize=18)    
+    # plt.gcf().subplots_adjust(bottom=0.15)
+    # plt.gcf().subplots_adjust(left=0.15)
+    # plt.savefig('{}/theta_iter.pdf'.format(save_dir), dpi=300)
+    # plt.cla()
+    # plt.close(fig)
+
+    # # conv_theta_iters
+    # fig, ax = plt.subplots()
+    # image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), wt_conv_theta_iters, linewidth=3, alpha=0.9)
+    # ax.set_xlabel('epochs', fontsize=18)
+    # ax.set_ylabel('degree', fontsize=18)    
+    # plt.gcf().subplots_adjust(bottom=0.15)
+    # plt.gcf().subplots_adjust(left=0.15)
+    # plt.savefig('{}/conv_theta_iter.pdf'.format(save_dir), dpi=300)
+    # plt.cla()
+    # plt.close(fig)
+
+
+
+def save_figures_epoch(save_data, save_dir, args, seed):
+    sns.set_theme(style="darkgrid")
+ 
+    train_errors = save_data['train_errors']
+    val_errors = save_data['val_errors']
+    wt_norms = save_data['wt_norms']
+    conv_norms = save_data['conv_norms']
+    effective_lr = save_data['effective_lrs']
+    effective_conv_lr = save_data['effective_conv_lrs']
+    wt_thetas = save_data['wt_thetas']
+    wt_conv_thetas = save_data['wt_conv_thetas']
+    w0_thetas = save_data['w0_thetas']
+    w0_conv_thetas = save_data['w0_conv_thetas']
     wt_theta_iters = save_data['wt_theta_iters']
     wt_conv_theta_iters = save_data['wt_conv_theta_iters']
 
@@ -102,7 +284,7 @@ def save_figures(save_data, save_dir, args, seed):
     avg_norm_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name])
     avg_norm_file.to_excel(save_dir+'/direction_file_seed_{}_{}_{}_{}_{}.xlsx'.format(
                             seed, args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
-    angle_file = pd.DataFrame(excel_data2, columns=np.arange(args.epochs*(50000//args.batch_size)//args.angle_freq), index=[name2])
+    angle_file = pd.DataFrame(excel_data2, columns=np.arange(len(wt_theta_iters)), index=[name2])
     angle_file.to_excel(save_dir+'/angle_file_seed_{}_{}_{}_{}_{}_{}.xlsx'.format(
                             seed, args.epochs, args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
 
@@ -227,7 +409,7 @@ def save_figures(save_data, save_dir, args, seed):
 
     # theta_iters
     fig, ax = plt.subplots()
-    image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), wt_theta_iters, linewidth=3, alpha=0.9)
+    image, = ax.plot(np.arange(len(wt_theta_iters)), wt_theta_iters, linewidth=3, alpha=0.9)
     ax.set_xlabel('epochs', fontsize=18)
     ax.set_ylabel('degree', fontsize=18)    
     plt.gcf().subplots_adjust(bottom=0.15)
@@ -238,7 +420,7 @@ def save_figures(save_data, save_dir, args, seed):
 
     # conv_theta_iters
     fig, ax = plt.subplots()
-    image, = ax.plot(np.arange(args.epochs*((50000//args.batch_size))//args.angle_freq), wt_conv_theta_iters, linewidth=3, alpha=0.9)
+    image, = ax.plot(np.arange(len(wt_theta_iters)), wt_conv_theta_iters, linewidth=3, alpha=0.9)
     ax.set_xlabel('epochs', fontsize=18)
     ax.set_ylabel('degree', fontsize=18)    
     plt.gcf().subplots_adjust(bottom=0.15)
@@ -246,6 +428,9 @@ def save_figures(save_data, save_dir, args, seed):
     plt.savefig('{}/conv_theta_iter.pdf'.format(save_dir), dpi=300)
     plt.cla()
     plt.close(fig)
+
+
+
 
 # incorporated to scheduler below
 def cosine_scheduler(base_value, final_value, epochs, niter_per_ep, warmup_epochs=0, start_warmup_value=0):
