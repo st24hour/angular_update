@@ -671,8 +671,8 @@ if __name__ == '__main__':
         for file in [os.path.join(root, f) for f in files]:
                 os.chmod(file, mode)
 
-    os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim\
-        '/num_data_'+str(args.num_sample)+'/batch_'+str(args.batch_size), exist_ok=True)
+    os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim+'/num_data_'+
+                str(args.num_sample)+'/batch_'+str(args.batch_size), exist_ok=True)
     os.chmod(local_dir+args.save_dir, 0o777)
     os.chmod(local_dir+args.save_dir+args.dataset, 0o777)
     os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim, 0o777)
