@@ -401,8 +401,10 @@ def main(args, seed):
     # else:
     #     parameters = model.parameters()
 
-    optimizer = optim.SGD(parameters, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=args.nesterov)
-    # optimizer = optim.AdamW(model.parameters(), weight_decay=weight_decay)
+    if args.optim == 'SGD':
+        optimizer = optim.SGD(parameters, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=args.nesterov)
+    elif args.optim == 'AdamW':
+        optimizer = optim.AdamW(parameters, lr=args.lr, weight_decay=args.weight_decay)
     # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.decay_epoch, gamma=0.1)
     lr_schedule = utils.scheduler(args.lr, args.epochs,
         len(train_loader) // update_freq, warmup_epochs=args.warmup_epochs, start_warmup_value=1e-3, type = args.schedule_type,
@@ -659,18 +661,27 @@ if __name__ == '__main__':
         args.weight_decay = args.weight_decay/args.alpha_sqaure
         args.eps = args.eps*args.alpha_sqaure
     ####################################################################################################
+    # change the permission of logging folders
+    def change_permissions_recursive(path, mode=0o777):
+        for root, dirs, files in os.walk(path, topdown=False):
+            for dir in [os.path.join(root,d) for d in dirs]:
+                os.chmod(dir, mode)
+        for file in [os.path.join(root, f) for f in files]:
+                os.chmod(file, mode)
+
     os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+\
         '/num_data_'+str(args.num_sample)+'/batch_'+str(args.batch_size), exist_ok=True)
     os.chmod(local_dir+args.save_dir, 0o777)
     os.chmod(local_dir+args.save_dir+args.dataset, 0o777)
-    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type, 0o777)
-    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample), 0o777)
-    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'/num_data_'+str(args.num_sample)+'/batch_'+str(args.batch_size), 0o777)
-
+    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim, 0o777)
+    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim+'/num_data_'+str(args.num_sample), 0o777)
+    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim+'/num_data_'+str(args.num_sample)
+            +'/batch_'+str(args.batch_size), 0o777)
+    
     # FTP location (where we save logs)
-    copy_dir = '{}{}/{}/num_data_{}/batch_{}/\
+    copy_dir = '{}{}/{}_{}/num_data_{}/batch_{}/\
 {}_WD_{}_lr{}_warmup_{}_filter_bn_bias_{}_moment_{}_nester_{}_epoch{}_amp_{}_seed{}_'.format(
-        args.save_dir, args.dataset, args.net_type, args.num_sample, args.batch_size, \
+        args.save_dir, args.dataset, args.net_type, args.optim, args.num_sample, args.batch_size, \
         args.schedule_type, args.weight_decay, args.lr, args.warmup_epochs, args.filter_bn_bias, \
         args.momentum, args.nesterov, args.epochs, args.amp, \
         str(args.seed).replace("[", "").replace("]", "").replace(",", "_"))
