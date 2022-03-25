@@ -558,6 +558,8 @@ if __name__ == '__main__':
                         help='manual episode number (useful on restarts)')
     parser.add_argument('--batch_size', type=int, default=128, 
                         help='input batch size')
+    parser.add_argument('--optim', default='SGD', type=str, 
+                        help='optimizer: SGD | AdamW')                        
     parser.add_argument('--lr', '--learning-rate', default=0.1, type=float, 
                         help='initial learning rate')
     parser.add_argument('--lr_end', default=0.0001, type=float, 
