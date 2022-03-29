@@ -673,13 +673,15 @@ if __name__ == '__main__':
 
     os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim+'/num_data_'+
                 str(args.num_sample)+'/batch_'+str(args.batch_size), exist_ok=True)
-    os.chmod(local_dir, 0o777)            
-    os.chmod(local_dir+args.save_dir, 0o777)
-    os.chmod(local_dir+args.save_dir+args.dataset, 0o777)
-    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim, 0o777)
-    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim+'/num_data_'+str(args.num_sample), 0o777)
-    os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim+'/num_data_'+str(args.num_sample)
-            +'/batch_'+str(args.batch_size), 0o777)
+    
+    change_permissions_recursive(local_dir, 0o777)
+    # os.chmod(local_dir, 0o777)            
+    # os.chmod(local_dir+args.save_dir, 0o777)
+    # os.chmod(local_dir+args.save_dir+args.dataset, 0o777)
+    # os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim, 0o777)
+    # os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim+'/num_data_'+str(args.num_sample), 0o777)
+    # os.chmod(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim+'/num_data_'+str(args.num_sample)
+    #         +'/batch_'+str(args.batch_size), 0o777)
     
     # FTP location (where we save logs)
     copy_dir = '{}{}/{}_{}/num_data_{}/batch_{}/\
