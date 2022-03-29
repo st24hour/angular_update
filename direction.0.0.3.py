@@ -666,6 +666,7 @@ if __name__ == '__main__':
     # change the permission of logging folders
     def change_permissions_recursive(path, mode=0o777):
         for root, dirs, files in os.walk(path, topdown=False):
+            print(dirs)
             for dir in [os.path.join(root,d) for d in dirs]:
                 os.chmod(dir, mode)
         for file in [os.path.join(root, f) for f in files]:
