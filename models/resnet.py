@@ -59,35 +59,6 @@ class BasicBlock(nn.Module):
         # print(self.bn2.running_var)
         return out
 
-class BasicBlock_noBN(nn.Module):
-    expansion = 1
-
-    def __init__(self, in_planes, planes, stride=1, eps=1e-05, momentum=0.1):
-        super(BasicBlock_noBN, self).__init__()
-        self.conv1 = conv3x3_bias(in_planes, planes, stride)
-        # self.bn1 = nn.BatchNorm2d(planes, momentum=momentum, eps=eps)
-        self.conv2 = conv3x3(planes, planes)
-        self.bn2 = nn.BatchNorm2d(planes, momentum=momentum, eps=eps)
-
-        self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(self.expansion*planes, momentum=momentum, eps=eps)
-            )
-
-    def forward(self, x):
-        out = F.relu((self.conv1(x)))
-        out = self.bn2(self.conv2(out))
-        out = torch.add(out, self.shortcut(x))
-        out = F.relu(out)
-
-        # print(self.bn1.running_mean)
-        # print(self.bn1.running_var)
-        # print(self.bn2.running_mean)
-        # print(self.bn2.running_var)
-        return out
-
 class BasicBlock_GBN(nn.Module):
     expansion = 1
 
@@ -103,30 +74,6 @@ class BasicBlock_GBN(nn.Module):
             self.shortcut = nn.Sequential(
                 nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
                 GBN(self.expansion*planes, eps=eps)
-            )
-
-    def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.bn2(self.conv2(out))
-        out = torch.add(out, self.shortcut(x))
-        out = F.relu(out)
-        return out
-
-class BasicBlock_GBN_bn_fix(nn.Module):
-    expansion = 1
-
-    def __init__(self, in_planes, planes, stride=1, eps=1e-05):
-        super(BasicBlock_GBN_bn_fix, self).__init__()
-        self.conv1 = conv3x3(in_planes, planes, stride)
-        self.bn1 = GBN_invariant(planes, eps=eps)
-        self.conv2 = conv3x3(planes, planes)
-        self.bn2 = GBN_invariant(planes, eps=eps)
-
-        self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
-                GBN_invariant(self.expansion*planes, eps=eps)
             )
 
     def forward(self, x):
@@ -235,34 +182,6 @@ class Bottleneck_GBN(nn.Module):
     def forward(self, x):
         out = F.relu(self.bn1(self.conv1(x)))
         out = F.relu(self.bn2(self.conv2(out)))
-        out = self.bn3(self.conv3(out))
-        # out += self.shortcut(x)
-        out = torch.add(out, self.shortcut(x))
-        out = F.relu(out)
-        return out
-
-class Bottleneck_GBN_noBN(nn.Module):
-    expansion = 4
-
-    def __init__(self, in_planes, planes, stride=1, eps=1e-05, momentum=0.1):
-        super(Bottleneck_GBN_noBN, self).__init__()
-        self.conv1 = nn.Conv2d(in_planes, planes, kernel_size=1, bias=False)
-        # self.bn1 = GBN(planes, momentum=0.1, eps=eps)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
-        # self.bn2 = GBN(planes, momentum=0.1, eps=eps)
-        self.conv3 = nn.Conv2d(planes, self.expansion*planes, kernel_size=1, bias=False)
-        self.bn3 = GBN(self.expansion*planes, momentum=0.1, eps=eps)
-
-        self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
-                GBN(self.expansion*planes, momentum=0.1, eps=eps)
-            )
-
-    def forward(self, x):
-        out = F.relu((self.conv1(x)))
-        out = F.relu((self.conv2(out)))
         out = self.bn3(self.conv3(out))
         # out += self.shortcut(x)
         out = torch.add(out, self.shortcut(x))
@@ -506,9 +425,9 @@ class ResNet_GBN_invariant(nn.Module):
         y = self.linear(out)
         # print(self.bn1.running_var)
         return y
-        
+
 class ResNet_GBN_invariant2(nn.Module):
-    def __init__(self, block, num_blocks, std_weight=1., num_classes=10, zero_init_residual=False, amp=True, eps=1e-05):
+    def __init__(self, block, num_blocks, std_weight=1., num_classes=10, zero_init_residual=False, amp=True, eps=1e-05, width=1.0):
         super(ResNet_GBN_invariant2, self).__init__()
         self.amp = amp
         self.eps = eps
@@ -516,10 +435,10 @@ class ResNet_GBN_invariant2(nn.Module):
 
         self.conv1 = conv3x3(3,64)
         self.bn1 = GBN(64, eps=self.eps)
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
+        self.layer1 = self._make_layer(block, int(64*width), num_blocks[0], stride=1)
+        self.layer2 = self._make_layer(block, int(128*width), num_blocks[1], stride=2)
+        self.layer3 = self._make_layer(block, int(256*width), num_blocks[2], stride=2)
+        self.layer4 = self._make_layer(block, int(512*width), num_blocks[3], stride=2)
         self.bn2 = GBN_invariant(512, eps=self.eps)
         self.linear = nn.Linear(512*block.expansion, num_classes)
 
@@ -560,73 +479,6 @@ class ResNet_GBN_invariant2(nn.Module):
                 out = self.bn2(out)
                 out = F.avg_pool2d(out, 4)
                 # out = F.adaptive_avg_pool2d(out, (1,1))
-                out = out.view(out.size(0), -1)
-                y = self.linear(out)
-                return y
-        else:
-            out = F.relu(self.bn1(self.conv1(x)))
-            out = self.layer1(out)
-            out = self.layer2(out)
-            out = self.layer3(out)
-            out = self.layer4(out)
-            out = self.bn2(out)
-            out = F.avg_pool2d(out, 4)
-            out = out.view(out.size(0), -1)
-            y = self.linear(out)
-            return y
-
-class ResNet_GBN_invariant2_bn_fix(nn.Module):
-    def __init__(self, block, num_blocks, std_weight=1., num_classes=10, zero_init_residual=False, amp=True, eps=1e-05):
-        super(ResNet_GBN_invariant2_bn_fix, self).__init__()
-        self.amp = amp
-        self.eps = eps
-        self.in_planes = 64
-
-        self.conv1 = conv3x3(3,64)
-        self.bn1 = GBN_invariant(64, eps=self.eps)
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
-        self.bn2 = GBN_invariant(512, eps=self.eps)
-        self.linear = nn.Linear(512*block.expansion, num_classes)
-
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                init_js.kaiming_normal_(m.weight, std_weight=std_weight, mode='fan_out', nonlinearity='relu')
-            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
-                if m.weight is not None:
-                    init_js.constant_(m.weight, 1)
-                    init_js.constant_(m.bias, 0)
-            # elif isinstance(m, nn.Linear):
-            #     init_js.normal_(m.weight, 0, 0.01)
-            #     init_js.normal_(m.bias, 0, 0.01)
-
-        if zero_init_residual:
-            for m in self.modules():
-                if isinstance(m, Bottleneck_GBN):
-                    nn.init.constant_(m.bn3.bn.weight, 0)
-                elif isinstance(m, BasicBlock_GBN):
-                    nn.init.constant_(m.bn2.bn.weight, 0)
-
-    def _make_layer(self, block, planes, num_blocks, stride):
-        strides = [stride] + [1]*(num_blocks-1)
-        layers = []
-        for stride in strides:
-            layers.append(block(self.in_planes, planes, stride, eps=self.eps))
-            self.in_planes = planes * block.expansion
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        if self.amp:
-            with autocast():
-                out = F.relu(self.bn1(self.conv1(x)))
-                out = self.layer1(out)
-                out = self.layer2(out)
-                out = self.layer3(out)
-                out = self.layer4(out)
-                out = self.bn2(out)
-                out = F.avg_pool2d(out, 4)
                 out = out.view(out.size(0), -1)
                 y = self.linear(out)
                 return y
@@ -775,73 +627,7 @@ class ResNet_invariant(nn.Module):
             y = self.linear(out)
             return y
 
-class ResNet_invariant_noBN(nn.Module):
-    def __init__(self, block, num_blocks, std_weight=1., num_classes=10, zero_init_residual=False, amp=True, eps=1e-05, momentum=0.1):
-        super(ResNet_invariant_noBN, self).__init__()
-        self.amp = amp
-        self.eps = eps
-        self.momentum = momentum
-        self.in_planes = 64
 
-        self.conv1 = conv3x3(3,64)
-        # self.bn1 = nn.BatchNorm2d(64, momentum=self.momentum, eps=self.eps)
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
-        self.bn2 = nn.BatchNorm2d(512*block.expansion, momentum=self.momentum, affine=False, eps=self.eps)
-        self.linear = nn.Linear(512*block.expansion, num_classes)
-
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                init_js.kaiming_normal_(m.weight, std_weight=std_weight, mode='fan_out', nonlinearity='relu')
-            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
-                if m.weight is not None:
-                    init_js.constant_(m.weight, 1)
-                    init_js.constant_(m.bias, 0)
-
-        if zero_init_residual:
-            for m in self.modules():
-                if isinstance(m, Bottleneck):
-                    nn.init.constant_(m.bn3.weight, 0)
-                elif isinstance(m, BasicBlock):
-                    nn.init.constant_(m.bn2.weight, 0)
-
-    def _make_layer(self, block, planes, num_blocks, stride):
-        strides = [stride] + [1]*(num_blocks-1)
-        layers = []
-        for stride in strides:
-            layers.append(block(self.in_planes, planes, stride, eps=self.eps, momentum=self.momentum))
-            self.in_planes = planes * block.expansion
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        if self.amp:
-            with autocast():
-                # out = F.relu(self.bn1(self.conv1(x)))
-                out = F.relu((self.conv1(x)))
-                out = self.layer1(out)
-                out = self.layer2(out)
-                out = self.layer3(out)
-                out = self.layer4(out)
-                out = self.bn2(out)
-                out = F.avg_pool2d(out, 4)
-                out = out.view(out.size(0), -1)
-                y = self.linear(out)
-                return y
-        else:
-            # out = F.relu(self.bn1(self.conv1(x)))
-            out = F.relu((self.conv1(x)))
-            out = self.layer1(out)
-            out = self.layer2(out)
-            out = self.layer3(out)
-            out = self.layer4(out)
-            out = self.bn2(out)
-            out = F.avg_pool2d(out, 4)
-            out = out.view(out.size(0), -1)
-            y = self.linear(out)
-            return y
-            
 class ResNet_invariant_avg(nn.Module):
     def __init__(self, block, num_blocks, std_weight=1., num_classes=10, zero_init_residual=False, amp=True, eps=1e-05, momentum=0.1):
         super(ResNet_invariant_avg, self).__init__()
@@ -1196,73 +982,6 @@ class ResNet_GBN_imagenet_invariant2(nn.Module):
         y = self.linear(out)
         return y
 
-class ResNet_GBN_imagenet_invariant2_noBN(nn.Module):
-    def __init__(self, block, num_blocks, std_weight=1., num_classes=1000, zero_init_residual=True, amp=True, eps=1e-05):
-        super(ResNet_GBN_imagenet_invariant2_noBN, self).__init__()
-        self.amp = amp
-        self.eps = eps
-        self.in_planes = 64
-
-        self.conv1 = nn.Conv2d(3, self.in_planes, kernel_size=7, stride=2, padding=3, bias=False)
-        # self.bn1 = GBN(self.in_planes, eps=self.eps)
-        self.bn2 = GBN_invariant(512*block.expansion, eps=self.eps)
-        self.relu = nn.ReLU(inplace=True)
-        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-
-        # self.conv1 = conv3x3(3,64)
-        # self.bn1 = nn.BatchNorm2d(64, eps=1e-5)
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
-
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.linear = nn.Linear(512*block.expansion, num_classes)
-
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                # nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-                init_js.kaiming_normal_(m.weight, std_weight=std_weight, mode='fan_out', nonlinearity='relu')
-            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
-                if m.weight is not None:
-                    nn.init.constant_(m.weight, 1)
-                    nn.init.constant_(m.bias, 0)
-            # elif isinstance(m, nn.Linear):
-            #     nn.init.normal_(m.weight, 0, 0.01)
-            #     nn.init.normal_(m.bias, 0, 0.01)
-
-        if zero_init_residual:
-            for m in self.modules():
-                if isinstance(m, Bottleneck_GBN):
-                    nn.init.constant_(m.bn3.bn.weight, 0)
-                elif isinstance(m, BasicBlock_GBN):
-                    nn.init.constant_(m.bn2.bn.weight, 0)
-
-
-    def _make_layer(self, block, planes, num_blocks, stride):
-        strides = [stride] + [1]*(num_blocks-1)
-        layers = []
-        for stride in strides:
-            layers.append(block(self.in_planes, planes, stride, eps=self.eps))
-            self.in_planes = planes * block.expansion
-        return nn.Sequential(*layers)
-           
-    @autocast()
-    def forward(self, x):
-        out = self.conv1(x)
-        # out = self.bn1(out)
-        out = self.relu(out)
-        out = self.maxpool(out)
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        out = self.layer4(out)
-        out = self.bn2(out)
-        out = self.avgpool(out)
-        out = out.view(out.size(0), -1)
-        y = self.linear(out)
-        return y
-
 
 class ResNet_GBN_inv_stl(nn.Module):
     def __init__(self, block, num_blocks, std_weight=1., num_classes=10, zero_init_residual=False, amp=True, eps=1e-05):
@@ -1357,28 +1076,20 @@ def resnet18_GBN(num_classes, std_weight=1., zero_init_residual=False):
 def resnet18_GBN_invariant(num_classes, std_weight=1., zero_init_residual=False):
     return ResNet_GBN_invariant(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual)
 
-def resnet18_GBN_invariant2(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05, **kwargs):
+def resnet18_GBN_invariant2(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05, width=1.0, **kwargs):
     return ResNet_GBN_invariant2(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
-                                amp=amp, eps=eps)
+                                amp=amp, eps=eps, width=width, **kwargs)
 
 def resnet18_GBN_inv_stl(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
     return ResNet_GBN_inv_stl(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
                                 amp=amp, eps=eps)
                                 
-def resnet18_GBN_invariant2_bn_fix(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
-    return ResNet_GBN_invariant2_bn_fix(BasicBlock_GBN_bn_fix, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, \
-                                zero_init_residual=zero_init_residual, amp=amp, eps=eps)
-
 def resnet18_GBN_invariant2_avg(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05):
     return ResNet_GBN_invariant2_avg(BasicBlock_GBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
                                 amp=amp, eps=eps)
     
 def resnet18_invariant(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05, momentum=0.1):
     return ResNet_invariant(BasicBlock, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
-                                amp=amp, eps=eps, momentum=momentum)
-
-def resnet18_invariant_noBN(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05, momentum=0.1):
-    return ResNet_invariant_noBN(BasicBlock_noBN, [2,2,2,2], std_weight=std_weight, num_classes=num_classes, zero_init_residual=zero_init_residual, \
                                 amp=amp, eps=eps, momentum=momentum)
 
 def resnet18_invariant_avg(num_classes, std_weight=1., zero_init_residual=False, amp=True, eps=1e-05, momentum=0.1):
@@ -1405,10 +1116,6 @@ def resnet50_GBN_invariant2(num_classes, std_weight=1., zero_init_residual=True,
     return ResNet_GBN_imagenet_invariant2(Bottleneck_GBN, [3,4,6,3], std_weight=std_weight, num_classes=num_classes, \
                             zero_init_residual=zero_init_residual, amp=amp, eps=eps)
 
-def resnet50_GBN_invariant2_noBN(num_classes, std_weight=1., zero_init_residual=True, amp=True, eps=1e-05):
-    return ResNet_GBN_imagenet_invariant2_noBN(Bottleneck_GBN_noBN, [3,4,6,3], std_weight=std_weight, num_classes=num_classes, \
-                            zero_init_residual=zero_init_residual, amp=amp, eps=eps)
-                                
 # def test():
 #     net = ResNet18()
 #     y = net(Variable(torch.randn(1,3,32,32)))
