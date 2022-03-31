@@ -118,7 +118,7 @@ def train(logger, train_loader, model, criterion, optimizer, epoch, update_freq,
                         'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                         'acc@1 {top1.val:.3f} ({top1.avg:.3f})\t'
-                        'lr {lr:.4f}'.format(
+                        'lr {lr:.6f}'.format(
                             epoch, i, len(train_loader), batch_time=batch_time,
                             loss=losses, top1=top1, lr=lr_schedule[it]))
 
@@ -382,7 +382,7 @@ def main(args, seed):
 
     model_to_call = getattr(models, args.net_type)
     model = model_to_call(num_classes=args.num_classes, zero_init_residual=args.zero_init_residual, amp=args.amp, 
-                            eps=args.eps, effnet_default_init=True)
+                            eps=args.eps, width=args.width, effnet_default_init=True)
     model = model.to(device)
     # torchsummary.summary(model, (3, 256, 256),device='cuda')
     model = torch.nn.DataParallel(model)
@@ -586,6 +586,8 @@ if __name__ == '__main__':
                         help='resnet18, densenetBC100')
     parser.add_argument('--zero_init_residual', default=True, action='store_false',
                         help='zero_init_residual of last residual BN')
+    parser.add_argument('--width', default=1, type=float, 
+                        help='resnet channel width multiplier')
     # parser.add_argument('--std_weight', default=1., type=float, 
     #                     help='initialization parameter. weight of std in He initialize')    
     parser.add_argument('--dataset', default='cifar10', 
