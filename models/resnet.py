@@ -427,7 +427,7 @@ class ResNet_GBN_invariant(nn.Module):
         return y
 
 class ResNet_GBN_invariant2(nn.Module):
-    def __init__(self, block, num_blocks, std_weight=1., num_classes=10, zero_init_residual=False, amp=True, eps=1e-05, width=1.0):
+    def __init__(self, block, num_blocks, std_weight=1., num_classes=10, zero_init_residual=False, amp=True, eps=1e-05, width=1.0, **kwargs):
         super(ResNet_GBN_invariant2, self).__init__()
         self.amp = amp
         self.eps = eps
