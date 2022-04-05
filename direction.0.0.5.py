@@ -673,7 +673,7 @@ if __name__ == '__main__':
         for file in [os.path.join(root, f) for f in files]:
                 os.chmod(file, mode)
 
-    os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_'+args.optim+'/num_data_'+
+    os.makedirs(local_dir+args.save_dir+args.dataset+'/'+args.net_type+'_width_'+args.width+'_'+args.optim+'/num_data_'+
                 str(args.num_sample)+'/batch_'+str(args.batch_size), exist_ok=True)
     
     change_permissions_recursive(local_dir, 0o777)
