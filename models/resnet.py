@@ -431,10 +431,10 @@ class ResNet_GBN_invariant2(nn.Module):
         super(ResNet_GBN_invariant2, self).__init__()
         self.amp = amp
         self.eps = eps
-        self.in_planes = 64
+        self.in_planes = int(64*width)
 
-        self.conv1 = conv3x3(3,64)
-        self.bn1 = GBN(64, eps=self.eps)
+        self.conv1 = conv3x3(3,int(64*width))
+        self.bn1 = GBN(int(64*width), eps=self.eps)
         self.layer1 = self._make_layer(block, int(64*width), num_blocks[0], stride=1)
         self.layer2 = self._make_layer(block, int(128*width), num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, int(256*width), num_blocks[2], stride=2)
