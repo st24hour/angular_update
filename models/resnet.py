@@ -439,8 +439,8 @@ class ResNet_GBN_invariant2(nn.Module):
         self.layer2 = self._make_layer(block, int(128*width), num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, int(256*width), num_blocks[2], stride=2)
         self.layer4 = self._make_layer(block, int(512*width), num_blocks[3], stride=2)
-        self.bn2 = GBN_invariant(512, eps=self.eps)
-        self.linear = nn.Linear(512*block.expansion, num_classes)
+        self.bn2 = GBN_invariant(int(512*width), eps=self.eps)
+        self.linear = nn.Linear(int(512*width)*block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
