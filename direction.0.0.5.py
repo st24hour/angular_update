@@ -2,6 +2,7 @@
 ******  Weight Direction Experiment  ******
 0.0.3 will be deprecated
 ResNet width can be modified by args.width 
+training loss for each seed is not saved, but average loss is saved as excel and figure
 '''
 from __future__ import print_function
 # from __future__ import division
@@ -163,9 +164,9 @@ def train(logger, train_loader, model, criterion, optimizer, epoch, update_freq,
     log_value('conv_l2_norm', conv_l2_norm, epoch+1)
     log_value('conv_grad_l2_norm', conv_grad_l2_norm, epoch)
     log_value('effecitve_lr', effecitve_lr, epoch)
-    log_value('effecitve__conv_lr', effecitve_conv_lr, epoch)        
+    log_value('effecitve__conv_lr', effecitve_conv_lr, epoch)
 
-    return [wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, effecitve_lr, effecitve_conv_lr, (100.-top1.avg).item()]
+    return [wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, effecitve_lr, effecitve_conv_lr, (100.-top1.avg).item(), losses.avg.item()]
           
 
 def test(logger, test_loader, model, criterion, epoch):
@@ -412,12 +413,14 @@ def main(args, seed):
 
     # for save data
     best_acc = 0
+    train_losses = []
     train_errors, val_errors = [],[]
     wt_norms, conv_norms = [],[]
     wt_thetas, wt_conv_thetas = [],[]
     w0_thetas, w0_conv_thetas = [],[]
     effective_lrs, effective_conv_lrs = [],[]
-    save_data = {'train_errors':train_errors, 'val_errors':val_errors, 
+    save_data = {'train_losses':train_losses,
+                'train_errors':train_errors, 'val_errors':val_errors, 
                 'wt_norms':wt_norms, 'conv_norms':conv_norms, 
                 'wt_thetas':wt_thetas, 'wt_conv_thetas':wt_conv_thetas, 'w0_thetas':w0_thetas, 'w0_conv_thetas':w0_conv_thetas,
                 'effective_lrs':effective_lrs, 'effective_conv_lrs':effective_conv_lrs}
@@ -475,7 +478,7 @@ def main(args, seed):
         # adjust_learning_rate(optimizer, epoch)
 
         # train for one epoch
-        wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, effective_lr, effective_conv_lr, train_error = train(
+        wt_weight, wt_conv_weight, wt_l2_norm, conv_l2_norm, effective_lr, effective_conv_lr, train_error, train_loss = train(
             logger, train_loader, model, criterion, optimizer, epoch, update_freq, lr_schedule, conv_parameters)
         
         # calculate angular update in the degree
@@ -487,6 +490,7 @@ def main(args, seed):
         wt_conv_cos_theta = torch.clamp(torch.dot(prev_conv_weight, wt_conv_weight)/(prev_conv_l2_norm*conv_l2_norm),-1,1) # clamp for stability
         wt_conv_theta = (torch.acos(wt_conv_cos_theta)*(360./(2.*np.pi))).item()
 
+        train_losses.append(train_loss)
         train_errors.append(train_error)
         wt_norms.append(wt_l2_norm)
         conv_norms.append(conv_l2_norm)
@@ -539,7 +543,8 @@ def main(args, seed):
     del logger, fileHandler, streamHandler 
     if args.tensorboard: unconfigure()
 
-    utils.save_figures(save_data, save_dir, args, seed)
+    utils.save_figures(save_data, save_dir, args, seed) 
+    # saving train losses is not implemented because of backward compatability (direction.0.0.3.py don't save train losses) 
     return [np.array(acc), save_data]
 
 
@@ -714,6 +719,7 @@ if __name__ == '__main__':
     if args.seed is None:
         args.seed = [random.randint(0,sys.maxsize) for _ in range(5)]
     seeds_accs = [] 
+    train_losses_list = []
     train_errors_list, val_errors_list = [],[]
     norms_list, conv_norms_list = [], []
     effective_lr_list, effective_conv_lr_list = [], []
@@ -723,6 +729,7 @@ if __name__ == '__main__':
         np.random.seed(seed)
         seeds_acc, save_data = main(args, seed)
         seeds_accs.append(seeds_acc)
+        train_losses_list.append(save_data['train_losses'])
         train_errors_list.append(save_data['train_errors'])
         val_errors_list.append(save_data['val_errors'])
         norms_list.append(save_data['wt_norms'])
@@ -758,11 +765,19 @@ if __name__ == '__main__':
     effective_conv_lr_list.append(average_effective_conv_lr)
     effective_conv_lr_list.append(std_effective_conv_lr)
 
+    # save train loss log
+    average_train_loss = np.average(train_losses_list,0)
+    std_train_loss = np.std(train_losses_list,0)
+    train_errors_list.append(average_train_loss)
+    train_errors_list.append(std_train_loss)
+    os.makedirs(args.save_dir+'/'+str(average_train_loss[-1]).replace("[", "").replace("]", "").replace(",", " "))
+
     # save train error log
     average_train_error = np.average(train_errors_list,0)
     std_train_error = np.std(train_errors_list,0)
     train_errors_list.append(average_train_error)
     train_errors_list.append(std_train_error)
+    
     # save val error log
     average_val_error = np.average(val_errors_list,0)
     std_val_error = np.std(val_errors_list,0)
@@ -799,12 +814,13 @@ if __name__ == '__main__':
     w0_conv_thetas_list.append(average_conv_theta0)
     w0_conv_thetas_list.append(std_conv_theta0)
 
-    name= ['train_error']*len(train_errors_list)+['val_error']*len(val_errors_list)+\
+    name= ['train_loss']*len(train_losses_list)+['train_error']*len(train_errors_list)+['val_error']*len(val_errors_list)+\
         ['norm']*len(norms_list)+['conv_norm']*len(conv_norms_list)+\
         ['wt_theta']*len(wt_thetas_list)+['wt_conv_theta']*len(wt_conv_thetas_list)+\
         ['w0_theta']*len(w0_thetas_list)+['w0_conv_theta']*len(w0_conv_thetas_list)+\
         ['effective_lr']*len(effective_lr_list)+['effective_conv_lr']*len(effective_conv_lr_list)
     excel_data = []
+    excel_data.extend(train_losses_list)
     excel_data.extend(train_errors_list)
     excel_data.extend(val_errors_list)
     excel_data.extend(norms_list)
@@ -815,13 +831,22 @@ if __name__ == '__main__':
     excel_data.extend(w0_conv_thetas_list)
     excel_data.extend(effective_lr_list)
     excel_data.extend(effective_conv_lr_list)
-    avg_norm_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name, args.seed*10])  
+    avg_norm_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name, args.seed*11])
     avg_norm_file.to_excel(args.save_dir+'/direction_file_{}_{}_{}_{}.xlsx'.format(
         args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
     
     # save figure
     # plt.errorbar(np.arange(args.epochs+1), average_norm, std_norm)
     sns.set_theme(style="darkgrid")
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(args.epochs), average_train_loss, linewidth=3, alpha=0.9)
+    ax.fill_between(np.arange(args.epochs), average_train_loss-std_train_loss, average_train_loss+std_train_loss, alpha=0.2)
+    ax.set_xlabel('epochs', fontsize=18)
+    ax.set_ylabel('training loss %', fontsize=18)
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    fig.savefig('{}/training_loss.pdf'.format(args.save_dir), dpi=300)
 
     fig, ax = plt.subplots()
     image, = ax.plot(np.arange(args.epochs), average_train_error, linewidth=3, alpha=0.9)
