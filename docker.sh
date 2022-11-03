@@ -1,0 +1,118 @@
+# ICML
+# group4
+# nvidia-docker run --shm-size=128G --cpus=12 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/siit/:/home/user/ -w $(pwd) \
+# 	st24hour/pytorch:1.10.0_angular_update \
+# 	sh train.sh
+
+# 8GPU - ECCV
+nvidia-docker run --shm-size=64G --cpus=40 -it --rm --pid=host -v $(pwd):$(pwd) \
+	-v /home/siit/ssd1/:/home/user/ -w $(pwd) \
+	st24hour/pytorch:1.10.0_angular_update_seg \
+	sh train.sh
+
+# 8GPU - proposal
+# docker run --gpus all --shm-size=64G --cpus=40 -it --rm --pid=host -v $(pwd):$(pwd) \
+# 	-v /home/siit/ssd1/:/home/user/ -w $(pwd) \
+# 	st24hour/pytorch:1.10.0_angular_update_seg \
+# 	sh train.sh
+	
+# GCP
+# docker run --gpus all --shm-size=40g --ulimit memlock=-1 --ulimit stack=67108864 -it --rm --pid=host -v $(pwd):$(pwd) -w $(pwd) \
+# 	-v /etc/localtime:/etc/localtime:ro -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro \
+# 	-v /shared_storage:/home/user/ st24hour/pytorch:1.10.0_angular_update \
+# 	sh train.sh
+
+# docker run --gpus all --shm-size=40g --ulimit memlock=-1 --ulimit stack=67108864 -it --rm --pid=host -v $(pwd):$(pwd) -w $(pwd) -p 8100:8100 -v /etc/localtime:/etc/localtime:ro -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v /shared_storage:/home/user/ --name juseung st24hour/pytorch:1.10.0_angular_update
+
+# gpustat
+# nvidia-docker run --shm-size=64G --cpus=40 -it --rm --pid=host -v $(pwd):$(pwd) \
+# 	-v /home/siit/ssd1/:/home/user/ -w $(pwd) --name juseung \
+# 	st24hour/pytorch:1.10.0_angular_update_seg
+###############################################################################################
+
+	
+# IITP, 113
+# nvidia-docker run --cpus=2 -it --rm -v $(pwd):$(pwd) -v /home/user/jusung/:/home/user/jusung/ -w $(pwd) \
+# 	st24hour/pytorch:0.4.1_js00 \
+# 	sh train.sh \
+
+# group4, group2, hutom, 8gpu
+# nvidia-docker run --shm-size=512M --cpus=2 -it --rm -v $(pwd):$(pwd) -v /home/siit/jusung/:/home/user/jusung/ -w $(pwd) \
+# 	st24hour/pytorch:0.4.1_js00 \
+# 	sh train.sh \
+
+
+# # 176, 121, 8GPU(198)
+# nvidia-docker run --shm-size=1024M --cpus=4 -it --rm -v $(pwd):$(pwd) -v /home/siit/jusung/:/home/user/jusung/ -w $(pwd) \
+# 	st24hour/pytorch:0.4.1_js00 \
+# 	sh train.sh \
+
+# 8GPU(108)
+# docker run --gpus all --shm-size=1024M --cpus=4 -it --rm -v $(pwd):$(pwd) -v /home/siit/jusung/:/home/user/jusung/ -w $(pwd) \
+# 	st24hour/pytorch:0.4.1_js00 \
+# 	sh train.sh \
+
+
+
+
+# IITP, samsung
+# nvidia-docker run --shm-size=128G --cpus=32 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/user/jusung/:/home/user/jusung/ -v /media/SSD1/:/home/user/ssd1/ -w $(pwd) \
+# 	st24hour/pytorch:1.6.0_large_batch_v2 \
+# 	sh train.sh 
+
+# # group4, group2, 8GPU-old half precision
+# nvidia-docker run --shm-size=128G --cpus=12 -it --rm -v $(pwd):$(pwd) -v /home/siit/jusung/:/home/user/jusung/ -w $(pwd) \
+# 	st24hour/pytorch:1.6.0_large_batch_v2 \
+# 	sh train.sh
+
+# # group4 - imagenet
+# nvidia-docker run --shm-size=128G --cpus=12 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/siit/jusung/:/home/user/jusung/ -v /home/siit_hdd/dataset/:/home/user/ssd1/dataset/ -w $(pwd) \
+# 	st24hour/pytorch:1.6.0_large_batch_v2 \
+# 	sh train.sh
+
+# 159.108,      157.214, 158.158 (check SSD)
+# docker run --gpus all --shm-size=128G --cpus=40 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/siit/jusung/:/home/user/jusung/ -v /home/siit/ssd1/:/home/user/ssd1/ -w $(pwd) \
+# 	st24hour/pytorch:1.7.1_large_batch_v1 \
+# 	sh train.sh
+
+# 159.109(8gpu-h)
+# docker run --gpus all --shm-size=128G --cpus=40 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/siit/jusung/:/home/user/jusung/ -v /home/ssd/:/home/user/ssd1/ -w $(pwd) \
+# 	st24hour/pytorch:1.7.1_large_batch_v1 \
+# 	sh train.sh
+
+# 157.215
+# nvidia-docker run --shm-size=128G --cpus=40 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/siit/jusung/:/home/user/jusung/ -v /home/siit/ssd1/:/home/user/ssd1/ -w $(pwd) \
+# 	st24hour/pytorch:1.7.1_large_batch_v1 \
+# 	sh train.sh  
+
+# 157.161(8gpu-chan)
+# docker run --gpus all --shm-size=128G --cpus=32 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/siit/jusung/:/home/user/jusung/ -v /home/siit/ssd2/haeng/:/home/user/ssd1/dataset/ -w $(pwd) \
+# 	st24hour/pytorch:1.7.1_large_batch_v1 \
+# 	sh train.sh
+
+# 158.11 8GPU-ha
+# nvidia-docker run --shm-size=128G --cpus=40 -it --rm -v $(pwd):$(pwd) -v /home/siit/jusung/:/home/user/jusung/ -w $(pwd) \
+# 	st24hour/pytorch:1.6.0_large_batch_v2 \
+# 	sh train.sh                                                                                                            
+
+# DGX
+# nvidia-docker run --shm-size=512G --cpus=80 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/user/jusung/:/home/user/jusung/ -v /home/user/raid/ILSVRC2012/:/home/user/ssd1/dataset/ILSVRC2012/ -w $(pwd) \
+# 	st24hour/pytorch:1.7.1_large_batch_v1 \
+# 	sh train.sh
+
+
+# DGX ramdisk
+# nvidia-docker run --shm-size=512G --cpus=80 -it --rm -v $(pwd):$(pwd) \
+# 	-v /home/user/jusung/:/home/user/jusung/ -v /home/user/ramdisk/ILSVRC2012/:/home/user/ssd1/dataset/ILSVRC2012/ -w $(pwd) \
+# 	st24hour/pytorch:1.7.1_large_batch_v1 \
+# 	sh train.sh
+
+# nvidia-docker run --shm-size=128G --cpus=16 -it --rm -v $(pwd):$(pwd) -v /home/user/jusung/:/home/user/jusung/ -v /media/SSD1/:/home/user/ssd1/ -w $(pwd) st24hour/pytorch:1.6.0_large_batch_v2
