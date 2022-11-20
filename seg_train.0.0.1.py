@@ -11,13 +11,17 @@ import torchvision
 
 from segmentation.coco_utils import get_coco
 from segmentation import presets, utils
-import utils as angle_util
 
 # JS
 import logging
 import shutil
 from tensorboard_logger.tensorboard_logger import configure, log_value
 from segmentation.models import *
+import numpy as np
+from torch.cuda.amp import GradScaler
+from torch.cuda.amp import autocast
+import utils as angle_util
+import pandas as pd
 
 
 def get_dataset(dir_path, name, image_set, transform, **kwargs):
@@ -62,8 +66,9 @@ def evaluate(model, data_loader, device, num_classes, logger):
     with torch.no_grad():
         for image, target in metric_logger.log_every(data_loader, 100, header):
             image, target = image.to(device), target.to(device)
-            output = model(image)
-            output = output['out']
+            with autocast():
+                output = model(image)
+                output = output['out']
 
             confmat.update(target.flatten(), output.argmax(1).flatten())
 
@@ -77,22 +82,42 @@ def train_one_epoch(model, criterion, optimizer, data_loader, lr_scheduler, devi
     metric_logger = utils.MetricLogger(delimiter="  ", logger=logger)
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value}'))
     header = 'Epoch: [{}]'.format(epoch)
+    scaler = GradScaler()
     for image, target in metric_logger.log_every(data_loader, print_freq, header):
         image, target = image.to(device), target.to(device)
-        output = model(image)
-        # print(output['out'].size())
-        loss = criterion(output, target)
+        with autocast():
+            output = model(image)
+            # print(output['out'].size())
+            loss = criterion(output, target)
+            # if logger:
+            #     logger.info(loss.item())
 
         optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        # loss.backward()
+        # optimizer.step()
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
 
         if schedule_type == 'exp':
             lr_scheduler.step()
 
         metric_logger.update(loss=loss.item(), lr=optimizer.param_groups[0]["lr"])
+        # print(metric_logger.meters['loss'])
+        # print(metric_logger.meters['loss'].global_avg)  # good
+        
+
     if schedule_type == 'step':
         lr_scheduler.step()
+    
+    # calculate weight vector and norm
+    model.eval()
+    weight_info = angle_util.vectorize_weight(model, classifier_names=['classifer.4', 'classifier.3'])
+    wt_vector, wt_conv_vector, wt_l2_norm, wt_conv_l2_norm = \
+        weight_info['weight_vector'], weight_info['weight_conv_vector'], weight_info['weight_l2_norm'], weight_info['weight_conv_l2_norm']
+
+    # return으로 loss도 보내야 되는데.... loss.data로 뽑고 average meter 만들어야되나?
+    return wt_vector, wt_conv_vector, wt_l2_norm, wt_conv_l2_norm, metric_logger.meters['loss'].global_avg
 
 def change_permissions_recursive(path, mode=0o777):
         for root, dirs, files in os.walk(path, topdown=False):
@@ -101,42 +126,24 @@ def change_permissions_recursive(path, mode=0o777):
         for file in [os.path.join(root, f) for f in files]:
                 os.chmod(file, mode)
 
-def main(args):
-    utils.init_distributed_mode(args)
+def main(args,seed):
+    save_dir = args.output_dir+'/'+str(seed)
+    try:
+        os.makedirs(save_dir)
+        os.chmod(save_dir, 0o777)
+    except OSError:
+        pass
 
-    # location of main folder at local server
-    local_dir = '/home/user/jusung/weight_direction/'
-
-    # save location of FTP server and location of local sub-folder
-    copy_dir = '{}/{}/num_data_{}/batch_{}_pretrain_backbone_{}_aux_{}/WD_{}_lr_{}_{}_decay_{}_warmup_{}_moment_{}_epoch{}_'.format(
-        args.output_dir, args.model, args.num_sample, args.batch_size, args.pretrained_backbone, args.aux_loss, \
-                                                        args.weight_decay, args.lr, args.schedule_type, \
-                                                        str(args.decay_epoch).replace("[", "").replace("]", "").replace(",", "_"), \
-                                                        args.lr_warmup_epochs, args.momentum, args.epochs)
-
-    i=0
-    while os.path.isdir(copy_dir + str(i)) or os.path.isdir(local_dir+copy_dir + str(i)):   # whether to exist in FTP or local 
-        i += 1
-    copy_dir = copy_dir + str(i)
-
-    args.output_dir = local_dir+copy_dir
-    if utils.is_main_process():
-        os.makedirs(args.output_dir, exist_ok=True)
-        change_permissions_recursive(local_dir, 0o777)
-        # os.chmod(args.output_dir, 0o777)
-        # configure(args.output_dir)
-        print(args.output_dir)
-
-    # print(args)
     if (not args.distributed) or (args.distributed and utils.is_main_process()):
         logger = logging.getLogger("js_logger")
-        fileHandler = logging.FileHandler(args.output_dir+'/train.log')
+        fileHandler = logging.FileHandler(save_dir+'/train.log')
         streamHandler = logging.StreamHandler()
         logger.addHandler(fileHandler)
         logger.addHandler(streamHandler)
         logger.setLevel(logging.INFO)
+        logger.propagate = False    # DDP에서는 이거 해야지 logger.info 두 번씩 출력 안됨
         logger.info(args)
-        configure(args.output_dir)
+        # configure(save_dir)
     else:
         logger = None
 
@@ -173,8 +180,9 @@ def main(args):
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 
     for name, param in model.named_parameters():    # make FCN scale-invariant
+        # print(name)
         if 'classifier.4' in name or 'classifier.3' in name:        # dropout 안쓰면 classifier.3이 마지막 conv
-            param.requires_grad = False        
+            param.requires_grad = False
 
     model_without_ddp = model
     if args.distributed:
@@ -239,29 +247,59 @@ def main(args):
             logger.info(confmat)
         return
 
+    train_losses = []
+    acc_globals, meanIoUs = [],[]
     wt_norms, conv_norms = [],[]
-    wt_thetas, wt_conv_thetas = [],[]
     w0_thetas, w0_conv_thetas = [],[]
-    # save_data = {'train_losses':train_losses,
-    #             'train_errors':train_errors, 'val_errors':val_errors, 
-    #             'wt_norms':wt_norms, 'conv_norms':conv_norms, 
-    #             'wt_thetas':wt_thetas, 'wt_conv_thetas':wt_conv_thetas, 'w0_thetas':w0_thetas, 'w0_conv_thetas':w0_conv_thetas,
-    #             'effective_lrs':effective_lrs, 'effective_conv_lrs':effective_conv_lrs}
+    wt_thetas, wt_conv_thetas = [],[]
+    save_data = {'train_losses':train_losses,
+                'acc_globals':acc_globals, 'meanIoUs':meanIoUs,
+                'wt_norms':wt_norms, 'conv_norms':conv_norms, 
+                'w0_thetas':w0_thetas, 'w0_conv_thetas':w0_conv_thetas, 'wt_thetas':wt_thetas, 'wt_conv_thetas':wt_conv_thetas,}
 
     # initial weight vector 
     weight_info = angle_util.vectorize_weight(model, classifier_names=['classifer.4', 'classifier.3'])
     w0_vector, w0_conv_vector, w0_l2_norm, w0_conv_l2_norm = \
         weight_info['weight_vector'], weight_info['weight_conv_vector'], weight_info['weight_l2_norm'], weight_info['weight_conv_l2_norm']
+    prev_vector = w0_vector
+    prev_conv_vector = w0_conv_vector
+    prev_l2_norm = w0_l2_norm
+    prev_conv_l2_norm = w0_conv_l2_norm
+    # logging w0
+    wt_norms.append(w0_l2_norm)
+    conv_norms.append(w0_conv_l2_norm)
     
     start_time = time.time()
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
-            train_sampler.set_epoch(epoch)      # 이유는 몰루
-        train_one_epoch(model, criterion, optimizer, data_loader, lr_scheduler, device, epoch, args.print_freq, logger, args.schedule_type)
+            train_sampler.set_epoch(epoch)      # distributed에서는 이렇게 해야지 매 epoch마다 다른 ordering을 쓰는 듯?
+        wt_vector, wt_conv_vector, wt_l2_norm, wt_conv_l2_norm, train_loss = train_one_epoch(
+            model, criterion, optimizer, data_loader, lr_scheduler, device, epoch, args.print_freq, logger, args.schedule_type)
+        # calcualte angular update
+        w0_theta = torch.acos(torch.dot(w0_vector, wt_vector)/(w0_l2_norm*wt_l2_norm)).item()*(360./(2.*np.pi))
+        wt_cos_theta = torch.clamp(torch.dot(prev_vector, wt_vector)/(prev_l2_norm*wt_l2_norm),-1,1) # clamp for stability
+        wt_theta = (torch.acos(wt_cos_theta)*(360./(2.*np.pi))).item()
+
+        w0_conv_theta = torch.acos(torch.dot(w0_conv_vector, wt_conv_vector)/(w0_conv_l2_norm*wt_conv_l2_norm)).item()*(360./(2.*np.pi))
+        wt_conv_cos_theta = torch.clamp(torch.dot(prev_conv_vector, wt_conv_vector)/(prev_conv_l2_norm*wt_conv_l2_norm),-1,1) # clamp for stability
+        wt_conv_theta = (torch.acos(wt_conv_cos_theta)*(360./(2.*np.pi))).item()
+
+        train_losses.append(train_loss)
+        wt_norms.append(wt_l2_norm)
+        conv_norms.append(wt_conv_l2_norm)
+        w0_thetas.append(w0_theta)
+        wt_thetas.append(wt_theta)
+        w0_conv_thetas.append(w0_conv_theta)     
+        wt_conv_thetas.append(wt_conv_theta)
+
+        # evaluation
         if (epoch+1) % args.test_freq == 0:
             confmat = evaluate(model, data_loader_test, device=device, num_classes=num_classes, logger=logger)
             if (not args.distributed) or (args.distributed and utils.is_main_process()):
                 logger.info(confmat)
+                acc_global, acc, iu = confmat.compute()
+                acc_globals.append(acc_global)
+                meanIoUs.append(iu.mean().item() * 100)
         checkpoint = {
             'model': model_without_ddp.state_dict(),
             'optimizer': optimizer.state_dict(),
@@ -272,22 +310,22 @@ def main(args):
         # utils.save_on_master(
         #     checkpoint,
         #     os.path.join(args.output_dir, 'model_{}.pth'.format(epoch)))
+
     utils.save_on_master(
         checkpoint,
-        os.path.join(args.output_dir, 'checkpoint.pth'))
+        os.path.join(save_dir, 'checkpoint.pth'))
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
 
     if utils.is_main_process():
-        try: 
-            shutil.copytree(args.output_dir, copy_dir)
-            os.chmod(copy_dir, 0o777)
-        except:
-            shutil.copytree(args.output_dir, copy_dir+'_copy2')
-            os.chmod(copy_dir+'_copy2', 0o777)
-
+        # deactivate logger
+        logger.removeHandler(fileHandler)
+        logger.removeHandler(streamHandler)
+        logging.shutdown()
+        del logger, fileHandler, streamHandler 
+    return save_data
 
 def get_args_parser(add_help=True):
     import argparse
@@ -346,10 +384,100 @@ def get_args_parser(add_help=True):
     parser.add_argument('--dist-url', default='env://', help='url used to set up distributed training')
     # JS
     parser.add_argument('--num_sample', default=80000, type=int, help='number of training samples')   
+    parser.add_argument('--seed', type=int, nargs='+', default=[0,1,2], help='random seed')
     return parser
+
+
+def main_looper(args):
+    # utils.init_distributed_mode(args)
+
+    # location of main folder at local server
+    local_dir = '/home/user/jusung/weight_direction/'
+
+    # save location of FTP server and location of local sub-folder
+    copy_dir = 'logs/{}/{}/num_data_{}/batch_{}_pretrain_backbone_{}_aux_{}/WD_{}_lr_{}_{}_decay_{}_warmup_{}_moment_{}_epoch{}_'.format(
+        args.output_dir, args.model, args.num_sample, args.batch_size, args.pretrained_backbone, args.aux_loss, \
+                                                        args.weight_decay, args.lr, args.schedule_type, \
+                                                        str(args.decay_epoch).replace("[", "").replace("]", "").replace(",", "_"), \
+                                                        args.lr_warmup_epochs, args.momentum, args.epochs)
+
+    i=0
+    while os.path.isdir(copy_dir + str(i)) or os.path.isdir(local_dir+copy_dir + str(i)):   # whether to exist in FTP or local 
+        i += 1
+    copy_dir = copy_dir + str(i)
+
+    args.output_dir = local_dir+copy_dir
+    if utils.is_main_process():
+        os.makedirs(args.output_dir, exist_ok=True)
+        change_permissions_recursive(local_dir, 0o777)
+        # configure(args.output_dir)
+        print(args.output_dir)
+
+
+    train_losses_list = []
+    acc_globals_list, meanIoUs_list = [],[]
+    wt_norms_list, conv_norms_list = [],[]
+    w0_thetas_list, w0_conv_thetas_list, wt_thetas_list, wt_conv_thetas_list = [],[],[],[]
+
+    for seed in args.seed:
+        np.random.seed(seed)
+        save_data = main(args,seed)
+        train_losses_list.append(save_data['train_losses'])
+        acc_globals_list.append(save_data['acc_globals'])
+        meanIoUs_list.append(save_data['meanIoUs'])
+        wt_norms_list.append(save_data['wt_norms'])
+        conv_norms_list.append(save_data['conv_norms'])
+        w0_thetas_list.append(save_data['w0_thetas'])
+        w0_conv_thetas_list.append(save_data['w0_conv_thetas'])
+        wt_thetas_list.append(save_data['wt_thetas'])
+        wt_conv_thetas_list.append(save_data['wt_conv_thetas'])        
+
+    # log - 전체 seed들에 대한 log를 저장
+    if utils.is_main_process():
+        angle_util.save_figures_seg(train_losses_list, args.output_dir, xlabel='epochs', ylabel='training loss', file_name='training_loss.pdf')
+        angle_util.save_figures_seg(acc_globals_list, args.output_dir, xlabel='epochs', ylabel='acc global %', file_name='acc_global.pdf')
+        angle_util.save_figures_seg(meanIoUs_list, args.output_dir, xlabel='epochs', ylabel='mean IoU', file_name='meanIoU.pdf')
+        angle_util.save_figures_seg(wt_norms_list, args.output_dir, xlabel='epochs', ylabel='wt norm', file_name='wt_norm.pdf')
+        angle_util.save_figures_seg(conv_norms_list, args.output_dir, xlabel='epochs', ylabel='conv norm', file_name='conv_norm.pdf')
+        angle_util.save_figures_seg(w0_thetas_list, args.output_dir, xlabel='epochs', ylabel='w0 theta', file_name='w0_theta.pdf')
+        angle_util.save_figures_seg(w0_conv_thetas_list, args.output_dir, xlabel='epochs', ylabel='w0 conv theta', file_name='w0_conv_theta.pdf')
+        angle_util.save_figures_seg(wt_thetas_list, args.output_dir, xlabel='epochs', ylabel='wt theta', file_name='wt_theta.pdf')
+        angle_util.save_figures_seg(wt_conv_thetas_list, args.output_dir, xlabel='epochs', ylabel='wt conv theta', file_name='wt_conv_theta.pdf')
+        # train_losses_list = angle_util.mean_variance_append(train_losses_list)
+
+    name= ['train_loss']*len(train_losses_list)+['acc_global']*len(acc_globals_list)+['meanIoU']*len(meanIoUs_list)+\
+        ['norm']*len(wt_norms_list)+['conv_norm']*len(conv_norms_list)+\
+        ['w0_theta']*len(w0_thetas_list)+['w0_conv_theta']*len(w0_conv_thetas_list)+\
+        ['wt_theta']*len(wt_thetas_list)+['wt_conv_theta']*len(wt_conv_thetas_list)
+    excel_data = []
+    excel_data.extend(train_losses_list)
+    excel_data.extend(acc_globals_list)
+    excel_data.extend(meanIoUs_list)
+    excel_data.extend(wt_norms_list)
+    excel_data.extend(conv_norms_list)
+    excel_data.extend(w0_thetas_list)
+    excel_data.extend(w0_conv_thetas_list)
+    excel_data.extend(wt_thetas_list)
+    excel_data.extend(wt_conv_thetas_list)
+    direction_file = pd.DataFrame(excel_data, columns=np.arange(args.epochs+1), index=[name, args.seed*9])
+    direction_file.to_excel(args.output_dir+'/direction_file_{}_{}_{}_{}.xlsx'.format(
+        args.num_sample, int(args.batch_size), args.lr, args.weight_decay))
+
+    if utils.is_main_process():
+        try: 
+            shutil.copytree(args.output_dir, copy_dir)
+            os.chmod(copy_dir, 0o777)
+        except:
+            shutil.copytree(args.output_dir, copy_dir+'_copy2')
+            os.chmod(copy_dir+'_copy2', 0o777)
+    return save_data
 
 
 if __name__ == "__main__":
     args = get_args_parser().parse_args()
     
-    main(args)
+    # main(args)
+    utils.init_distributed_mode(args)
+    main_looper(args)
+
+    

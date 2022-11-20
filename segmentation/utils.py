@@ -90,8 +90,8 @@ class ConfusionMatrix(object):
 
     def compute(self):
         h = self.mat.float()
-        acc_global = torch.diag(h).sum() / h.sum()
-        acc = torch.diag(h) / h.sum(1)
+        acc_global = torch.diag(h).sum() / h.sum()      # 전체 accuracy
+        acc = torch.diag(h) / h.sum(1)                  # classwise accuracy
         iu = torch.diag(h) / (h.sum(1) + h.sum(0) - torch.diag(h))
         return acc_global, acc, iu
 

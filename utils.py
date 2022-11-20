@@ -526,3 +526,35 @@ def vectorize_weight(model, classifier_names):
     'weight_conv_l2_norm': weight_conv_l2_norm
     }
     return output
+
+
+def mean_variance_append(log_list):
+    average = np.average(log_list,0)
+    std = np.std(log_list,0)
+    log_list.append(average)
+    log_list.append(std)
+    return log_list
+
+def save_figures_seg(log_list, save_dir, xlabel='epochs', ylabel='training loss %', file_name='training_loss.pdf'):
+    print(log_list)
+    # emtpy check
+    for i in log_list:
+        if not i:
+            print("log list is empty")
+            return
+    average = np.average(log_list,0)
+    std = np.std(log_list,0)
+    log_list.append(average)
+    log_list.append(std)
+    print(average)
+
+    fig, ax = plt.subplots()
+    image, = ax.plot(np.arange(len(average)), average, linewidth=3, alpha=0.9)
+    ax.fill_between(np.arange(len(average)), average-std, average+std, alpha=0.2)
+    ax.set_xlabel(xlabel, fontsize=18)
+    ax.set_ylabel(ylabel, fontsize=18)
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.gcf().subplots_adjust(left=0.15)
+    fig.savefig('{}/{}'.format(save_dir, file_name), dpi=300)
+
+
